@@ -484,7 +484,7 @@ classDiagram
         <<interface>>
         +addUser(User) void
         +getUserById(int) User
-        +getAllUsers() List~User~
+        +getAllUsers() List
         +updateUser(User) void
         +deleteUser(int) void
     }
@@ -493,7 +493,7 @@ classDiagram
         <<interface>>
         +addOrder(Order) void
         +getOrderById(int) Order
-        +getAllOrders() List~Order~
+        +getAllOrders() List
         +updateOrder(Order) void
         +deleteOrder(int) void
     }
@@ -502,7 +502,7 @@ classDiagram
         <<interface>>
         +generateBill(Bill) void
         +getBillByOrderId(int) Bill
-        +getUnpaidBills() List~Bill~
+        +getUnpaidBills() List
         +updateBill(Bill) void
     }
 
@@ -511,7 +511,7 @@ classDiagram
         -Connection connection
         +addUser(User) void
         +getUserById(int) User
-        +getAllUsers() List~User~
+        +getAllUsers() List
         +updateUser(User) void
         +deleteUser(int) void
     }
@@ -520,24 +520,9 @@ classDiagram
         -Connection connection
         +addOrder(Order) void
         +getOrderById(int) Order
-        +getAllOrders() List~Order~
+        +getAllOrders() List
         +updateOrder(Order) void
         +deleteOrder(int) void
-    }
-
-    %% Controllers
-    class OrderController {
-        -OrderService orderService
-        -Scanner scanner
-        +placeOrder() void
-        +viewOrderById() void
-    }
-
-    class PaymentController {
-        -PaymentService paymentService
-        -Scanner scanner
-        +makePayment() void
-        +viewPaymentHistory() void
     }
 
     %% Factory
@@ -560,63 +545,18 @@ classDiagram
         +closeConnection(Connection) void
     }
 
-    %% Enums
-    class UserRole {
-        <<enumeration>>
-        Manager
-        Waiter
-        KitchenStaff
-        Admin
-    }
-
-    class OrderStatus {
-        <<enumeration>>
-        Placed
-        Preparing
-        Served
-        Completed
-    }
-
-    class TableStatus {
-        <<enumeration>>
-        Available
-        Occupied
-        Booked
-        Reserved
-    }
-
-    class PaymentMethod {
-        <<enumeration>>
-        Cash
-        Card
-        UPI
-        Wallet
-    }
-
     %% Relationships
-    User ||--|| UserRole
-    Order ||--|| OrderStatus
-    Table ||--|| TableStatus
-    Payment ||--|| PaymentMethod
-    
-    Order ||--|| Bill
-    Bill ||--o{ Payment
-    
-    Customer ||--o{ TableBooking
-    Table ||--o{ TableBooking
-    Table ||--o{ Order
-    User ||--o{ Order
-    
+    Order --> Bill
+    Bill --> Payment
+    Customer --> TableBooking
+    Table --> TableBooking
+    Table --> Order
+    User --> Order
     UserDao <|.. UserDaoImpl
     OrderDao <|.. OrderDaoImpl
-    
-    OrderController --> OrderDao
-    PaymentController --> PaymentDao
-    
     RestaurantDaoFactory --> UserDao
     RestaurantDaoFactory --> OrderDao
     RestaurantDaoFactory --> BillDao
-    
     UserDaoImpl --> DatabaseUtil
     OrderDaoImpl --> DatabaseUtil
 ```
@@ -625,98 +565,39 @@ classDiagram
 
 ```mermaid
 flowchart TD
-    %% Actors
-    Manager[👨‍💼 Manager]
-    Waiter[👨‍🍳 Waiter]
-    KitchenStaff[👨‍🍳 Kitchen Staff]
-    Customer[👤 Customer]
+    Manager[Manager]
+    Waiter[Waiter]
+    KitchenStaff[Kitchen Staff]
+    Customer[Customer]
     
-    %% Use Cases
-    subgraph "Restaurant Management System"
-        %% User Management
+    subgraph System[Restaurant Management System]
         UC1[Manage Users]
-        UC2[View User Reports]
-        
-        %% Customer Management
-        UC3[Register Customer]
-        UC4[Update Customer Info]
-        UC5[View Customer History]
-        
-        %% Table Management
-        UC6[Manage Tables]
-        UC7[Check Table Status]
-        UC8[Update Table Status]
-        
-        %% Order Management
-        UC9[Take Order]
-        UC10[View Orders]
-        UC11[Update Order Status]
-        UC12[Cancel Order]
-        
-        %% Billing
-        UC13[Generate Bill]
-        UC14[Apply Discounts]
-        UC15[Calculate Tax]
-        
-        %% Payment
-        UC16[Process Payment]
-        UC17[View Payment History]
-        UC18[Handle Payment Issues]
-        
-        %% Table Booking
-        UC19[Book Table]
-        UC20[Confirm Booking]
-        UC21[Cancel Booking]
-        UC22[Check Availability]
-        
-        %% Kitchen Operations
-        UC23[View Kitchen Orders]
-        UC24[Update Preparation Status]
-        UC25[Mark Order Ready]
-        
-        %% Reporting
-        UC26[Generate Sales Report]
-        UC27[View Analytics]
+        UC2[Register Customer]
+        UC3[Manage Tables]
+        UC4[Take Order]
+        UC5[Update Order Status]
+        UC6[Generate Bill]
+        UC7[Process Payment]
+        UC8[Book Table]
+        UC9[View Kitchen Orders]
+        UC10[Generate Reports]
     end
     
-    %% Manager relationships
     Manager --> UC1
-    Manager --> UC2
-    Manager --> UC6
-    Manager --> UC26
-    Manager --> UC27
-    Manager --> UC18
+    Manager --> UC3
+    Manager --> UC10
     
-    %% Waiter relationships
-    Waiter --> UC3
+    Waiter --> UC2
     Waiter --> UC4
-    Waiter --> UC5
+    Waiter --> UC6
     Waiter --> UC7
     Waiter --> UC8
-    Waiter --> UC9
-    Waiter --> UC10
-    Waiter --> UC11
-    Waiter --> UC12
-    Waiter --> UC13
-    Waiter --> UC14
-    Waiter --> UC15
-    Waiter --> UC16
-    Waiter --> UC17
-    Waiter --> UC19
-    Waiter --> UC20
-    Waiter --> UC21
-    Waiter --> UC22
     
-    %% Kitchen Staff relationships
-    KitchenStaff --> UC23
-    KitchenStaff --> UC24
-    KitchenStaff --> UC25
-    KitchenStaff --> UC10
+    KitchenStaff --> UC5
+    KitchenStaff --> UC9
     
-    %% Customer relationships
-    Customer -.-> UC19
-    Customer -.-> UC9
-    Customer -.-> UC16
+    Customer -.-> UC4
+    Customer -.-> UC8
 ```
 
 ### Sequence Diagrams
