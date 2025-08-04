@@ -16,11 +16,15 @@ public class BillDAOImpl implements BillDAO {
 
     @Override
     public void generateBill(Bill bill) {
-        String sql = "INSERT INTO bills (order_id, total_amount, generated_at) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO bills (order_id, total_amount, discount, tax, final_amount, payment_status, generated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, bill.getOrderId());
             stmt.setDouble(2, bill.getTotalAmount());
-            stmt.setTimestamp(3, bill.getGeneratedAt());
+            stmt.setDouble(3, bill.getDiscount());
+            stmt.setDouble(4, bill.getTax());
+            stmt.setDouble(5, bill.getFinalAmount());
+            stmt.setString(6, bill.getPaymentStatus().toString());
+            stmt.setTimestamp(7, bill.getGeneratedAt());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -49,11 +53,15 @@ public class BillDAOImpl implements BillDAO {
 
     @Override
     public void updateBill(Bill bill) {
-        String sql = "UPDATE bills SET total_amount=?, generated_at=? WHERE bill_id=?";
+        String sql = "UPDATE bills SET total_amount=?, discount=?, tax=?, final_amount=?, payment_status=?, generated_at=? WHERE bill_id=?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setDouble(1, bill.getTotalAmount());
-            stmt.setTimestamp(2, bill.getGeneratedAt());
-            stmt.setInt(3, bill.getBillId());
+            stmt.setDouble(2, bill.getDiscount());
+            stmt.setDouble(3, bill.getTax());
+            stmt.setDouble(4, bill.getFinalAmount());
+            stmt.setString(5, bill.getPaymentStatus().toString());
+            stmt.setTimestamp(6, bill.getGeneratedAt());
+            stmt.setInt(7, bill.getBillId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

@@ -16,12 +16,13 @@ public class PaymentDAOImpl implements PaymentDAO {
 
     @Override
     public void recordPayment(Payment payment) {
-        String sql = "INSERT INTO payments (bill_id, payment_method, amount_paid, paid_at) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO payments (bill_id, payment_method, amount_paid, paid_at, status) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, payment.getBillId());
             stmt.setString(2, payment.getPaymentMethod().toString());
             stmt.setDouble(3, payment.getAmountPaid());
             stmt.setTimestamp(4, payment.getPaymentTime());
+            stmt.setString(5, payment.getStatus().toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

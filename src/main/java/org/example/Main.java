@@ -24,9 +24,10 @@ public class Main {
                 System.out.println("2. Customer Management");
                 System.out.println("3. Table Management");
                 System.out.println("4. Order Management");
-                System.out.println("5. Payment Management");
-                System.out.println("6. Table Booking Management");
-                System.out.println("7. Exit");
+                System.out.println("5. Bill Management");
+                System.out.println("6. Payment Management");
+                System.out.println("7. Table Booking Management");
+                System.out.println("8. Exit");
                 System.out.print("Choose an option: ");
                 int choice = scanner.nextInt();
                 scanner.nextLine();
@@ -36,9 +37,10 @@ public class Main {
                     case 2 -> handleCustomerManagement(daoFactory, scanner);
                     case 3 -> handleTableManagement(daoFactory, scanner);
                     case 4 -> handleOrderManagement(daoFactory, scanner);
-                    case 5 -> handlePaymentManagement(daoFactory, scanner);
-                    case 6 -> handleTableBookingManagement(daoFactory, scanner);
-                    case 7 -> {
+                    case 5 -> handleBillManagement(daoFactory, scanner);
+                    case 6 -> handlePaymentManagement(daoFactory, scanner);
+                    case 7 -> handleTableBookingManagement(daoFactory, scanner);
+                    case 8 -> {
                         System.out.println("Exiting...");
                         return;
                     }
@@ -369,7 +371,6 @@ public class Main {
 
     private static void handlePaymentManagement(RestaurantDAOFactory daoFactory, Scanner scanner) {
         PaymentDAO paymentDAO = daoFactory.getPaymentDAO();
-        BillDAO billDAO = daoFactory.getBillDAO();
 
         while (true) {
             System.out.println("\n=== Payment Management ===");
@@ -383,35 +384,9 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    // Show unpaid bills first
-                    List<Bill> unpaidBills = billDAO.getUnpaidBills();
-                    if (unpaidBills.isEmpty()) {
-                        System.out.println("No unpaid bills found.");
-                        break;
-                    }
-                    
-                    System.out.println("---- Unpaid Bills ----");
-                    for (Bill b : unpaidBills) {
-                        System.out.println("Bill ID: " + b.getBillId() + " | Order: " + b.getOrderId() + 
-                                         " | Amount: $" + b.getFinalAmount() + " | Status: " + b.getPaymentStatus());
-                    }
-                    
                     Payment payment = new Payment();
                     System.out.print("Bill ID: ");
-                    int billId = scanner.nextInt();
-                    
-                    // Validate bill exists and is unpaid
-                    Bill selectedBill = billDAO.getBillById(billId);
-                    if (selectedBill == null) {
-                        System.out.println("Invalid Bill ID.");
-                        break;
-                    }
-                    if (selectedBill.getPaymentStatus() == Bill.PaymentStatus.Paid) {
-                        System.out.println("Bill already paid.");
-                        break;
-                    }
-                    
-                    payment.setBillId(billId);
+                    payment.setBillId(scanner.nextInt());
                     scanner.nextLine();
                     System.out.print("Payment Method (Cash/Card/UPI/Wallet): ");
                     payment.setPaymentMethod(Payment.PaymentMethod.valueOf(scanner.nextLine()));
@@ -420,11 +395,6 @@ public class Main {
                     payment.setPaymentTime(new Timestamp(System.currentTimeMillis()));
                     payment.setStatus(Payment.Status.Successful);
                     paymentDAO.recordPayment(payment);
-                    
-                    // Update bill status
-                    selectedBill.setPaymentStatus(Bill.PaymentStatus.Paid);
-                    billDAO.updateBill(selectedBill);
-                    
                     System.out.println("Payment recorded successfully.");
                     break;
 
@@ -432,21 +402,16 @@ public class Main {
                     List<Payment> payments = paymentDAO.getAllPayments();
                     System.out.println("---- Payments ----");
                     for (Payment p : payments) {
-                        System.out.println(p.getPaymentId() + ": Bill " + p.getBillId() + 
-                                         " | Method: " + p.getPaymentMethod() + " | Amount: $" + p.getAmountPaid() +
-                                         " | Status: " + p.getStatus());
+                        System.out.println(p.getPaymentId() + ": Bill " + p.getBillId() + " | Method: " + p.getPaymentMethod() + " | Amount: " + p.getAmountPaid());
                     }
                     break;
 
                 case 3:
                     System.out.print("Enter Bill ID: ");
-                    int searchBillId = scanner.nextInt();
-                    Payment paymentByBill = paymentDAO.getPaymentByBillId(searchBillId);
+                    int billId = scanner.nextInt();
+                    Payment paymentByBill = paymentDAO.getPaymentByBillId(billId);
                     if (paymentByBill != null) {
-                        System.out.println("Payment ID: " + paymentByBill.getPaymentId() + 
-                                         " | Amount: $" + paymentByBill.getAmountPaid() + 
-                                         " | Method: " + paymentByBill.getPaymentMethod() +
-                                         " | Status: " + paymentByBill.getStatus());
+                        System.out.println("Payment ID: " + paymentByBill.getPaymentId() + " | Amount: " + paymentByBill.getAmountPaid() + " | Method: " + paymentByBill.getPaymentMethod());
                     } else {
                         System.out.println("Payment not found for this bill.");
                     }
@@ -463,8 +428,6 @@ public class Main {
 
     private static void handleTableBookingManagement(RestaurantDAOFactory daoFactory, Scanner scanner) {
         TableBookingDAO bookingDAO = daoFactory.getTableBookingDAO();
-        TableDAO tableDAO = daoFactory.getTableDAO();
-        CustomerDAO customerDAO = daoFactory.getCustomerDAO();
 
         while (true) {
             System.out.println("\n=== Table Booking Management ===");
@@ -479,45 +442,11 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    // Show available customers
-                    List<Customer> customers = customerDAO.getAllCustomers();
-                    System.out.println("---- Available Customers ----");
-                    for (Customer c : customers) {
-                        System.out.println("ID: " + c.getCustomerId() + " | Name: " + c.getName() + 
-                                         " | Phone: " + c.getPhone());
-                    }
-                    
-                    // Show available tables
-                    List<Table> tables = tableDAO.getAllTables();
-                    System.out.println("---- Available Tables ----");
-                    for (Table t : tables) {
-                        System.out.println("ID: " + t.getTableId() + " | Table #: " + t.getTableNumber() + 
-                                         " | Capacity: " + t.getCapacity() + " | Status: " + t.getStatus());
-                    }
-
                     TableBooking booking = new TableBooking();
                     System.out.print("Customer ID: ");
-                    int customerId = scanner.nextInt();
-                    
-                    // Validate customer exists
-                    Customer selectedCustomer = customerDAO.getCustomerById(customerId);
-                    if (selectedCustomer == null) {
-                        System.out.println("Invalid Customer ID.");
-                        break;
-                    }
-                    
+                    booking.setCustomerId(scanner.nextInt());
                     System.out.print("Table ID: ");
-                    int tableId = scanner.nextInt();
-                    
-                    // Validate table exists
-                    Table selectedTable = tableDAO.getTableById(tableId);
-                    if (selectedTable == null) {
-                        System.out.println("Invalid Table ID.");
-                        break;
-                    }
-                    
-                    booking.setCustomerId(customerId);
-                    booking.setTableId(tableId);
+                    booking.setTableId(scanner.nextInt());
                     scanner.nextLine();
                     System.out.print("Booking Date (YYYY-MM-DD): ");
                     booking.setBookingDate(Date.valueOf(scanner.nextLine()));
@@ -526,11 +455,6 @@ public class Main {
                     booking.setStatus(TableBooking.Status.Confirmed);
                     booking.setCreatedAt(new Timestamp(System.currentTimeMillis()));
                     bookingDAO.addBooking(booking);
-                    
-                    // Update table status to Booked
-                    selectedTable.setStatus(Table.Status.Booked);
-                    tableDAO.updateTable(selectedTable);
-                    
                     System.out.println("Booking added successfully.");
                     break;
 
@@ -538,78 +462,129 @@ public class Main {
                     List<TableBooking> bookings = bookingDAO.getAllBookings();
                     System.out.println("---- Bookings ----");
                     for (TableBooking b : bookings) {
-                        System.out.println(b.getBookingId() + ": Customer " + b.getCustomerId() + 
-                                         " | Table " + b.getTableId() + " | Date: " + b.getBookingDate() + 
-                                         " | Time: " + b.getBookingTime() + " | Status: " + b.getStatus());
+                        System.out.println(b.getBookingId() + ": Customer " + b.getCustomerId() + " | Table " + b.getTableId() + " | Date: " + b.getBookingDate() + " | Status: " + b.getStatus());
                     }
                     break;
 
                 case 3:
-                    // Show all bookings first
-                    List<TableBooking> allBookings = bookingDAO.getAllBookings();
-                    System.out.println("---- All Bookings ----");
-                    for (TableBooking b : allBookings) {
-                        System.out.println(b.getBookingId() + ": Customer " + b.getCustomerId() + 
-                                         " | Table " + b.getTableId() + " | Date: " + b.getBookingDate() + 
-                                         " | Status: " + b.getStatus());
-                    }
-                    
                     System.out.print("Enter Booking ID to update: ");
                     int updateId = scanner.nextInt();
                     scanner.nextLine();
                     TableBooking bookingToUpdate = bookingDAO.getBookingById(updateId);
                     if (bookingToUpdate != null) {
                         System.out.print("New Status (Confirmed/Cancelled/Completed): ");
-                        String statusInput = scanner.nextLine().trim();
-                        
-                        try {
-                            TableBooking.Status newStatus = TableBooking.Status.valueOf(statusInput);
-                            bookingToUpdate.setStatus(newStatus);
-                            bookingDAO.updateBooking(bookingToUpdate);
-                            
-                            // Update table status based on booking status
-                            Table bookedTable = tableDAO.getTableById(bookingToUpdate.getTableId());
-                            if (newStatus == TableBooking.Status.Cancelled || newStatus == TableBooking.Status.Completed) {
-                                bookedTable.setStatus(Table.Status.Available);
-                                tableDAO.updateTable(bookedTable);
-                            }
-                            
-                            System.out.println("Booking status updated.");
-                        } catch (IllegalArgumentException e) {
-                            System.out.println("Invalid status. Please use: Confirmed, Cancelled, or Completed.");
-                        }
+                        bookingToUpdate.setStatus(TableBooking.Status.valueOf(scanner.nextLine()));
+                        bookingDAO.updateBooking(bookingToUpdate);
+                        System.out.println("Booking status updated.");
                     } else {
                         System.out.println("Booking not found.");
                     }
                     break;
 
                 case 4:
-                    // Show all bookings first
-                    List<TableBooking> bookingsToDelete = bookingDAO.getAllBookings();
-                    System.out.println("---- All Bookings ----");
-                    for (TableBooking b : bookingsToDelete) {
-                        System.out.println(b.getBookingId() + ": Customer " + b.getCustomerId() + 
-                                         " | Table " + b.getTableId() + " | Date: " + b.getBookingDate() + 
-                                         " | Status: " + b.getStatus());
-                    }
-                    
                     System.out.print("Enter Booking ID to delete: ");
                     int deleteId = scanner.nextInt();
-                    scanner.nextLine();
-                    
-                    // Get booking details before deletion to update table status
-                    TableBooking bookingToDelete = bookingDAO.getBookingById(deleteId);
-                    if (bookingToDelete != null) {
-                        Table tableToFree = tableDAO.getTableById(bookingToDelete.getTableId());
-                        tableToFree.setStatus(Table.Status.Available);
-                        tableDAO.updateTable(tableToFree);
-                    }
-                    
                     bookingDAO.deleteBooking(deleteId);
                     System.out.println("Booking deleted.");
                     break;
 
                 case 5:
+                    return;
+
+                default:
+                    System.out.println("Invalid option. Try again.");
+            }
+        }
+    }
+
+    private static void handleBillManagement(RestaurantDAOFactory daoFactory, Scanner scanner) {
+        BillDAO billDAO = daoFactory.getBillDAO();
+
+        while (true) {
+            System.out.println("\n=== Bill Management ===");
+            System.out.println("1. Generate Bill");
+            System.out.println("2. View All Bills");
+            System.out.println("3. View Bill by Order ID");
+            System.out.println("4. View Unpaid Bills");
+            System.out.println("5. Update Bill");
+            System.out.println("6. Delete Bill");
+            System.out.println("7. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    Bill bill = new Bill();
+                    System.out.print("Order ID: ");
+                    bill.setOrderId(scanner.nextInt());
+                    System.out.print("Total Amount: ");
+                    bill.setTotalAmount(scanner.nextDouble());
+                    System.out.print("Discount: ");
+                    bill.setDiscount(scanner.nextDouble());
+                    System.out.print("Tax: ");
+                    bill.setTax(scanner.nextDouble());
+                    bill.setFinalAmount(bill.getTotalAmount() - bill.getDiscount() + bill.getTax());
+                    bill.setPaymentStatus(Bill.PaymentStatus.Unpaid);
+                    bill.setGeneratedAt(new Timestamp(System.currentTimeMillis()));
+                    billDAO.generateBill(bill);
+                    System.out.println("Bill generated successfully.");
+                    break;
+
+                case 2:
+                    List<Bill> unpaidBills = billDAO.getUnpaidBills();
+                    System.out.println("---- Bills ----");
+                    for (Bill b : unpaidBills) {
+                        System.out.println(b.getBillId() + ": Order " + b.getOrderId() + " | Total: " + b.getTotalAmount() + " | Final: " + b.getFinalAmount() + " | Status: " + b.getPaymentStatus());
+                    }
+                    break;
+
+                case 3:
+                    System.out.print("Enter Order ID: ");
+                    int orderId = scanner.nextInt();
+                    Bill billByOrder = billDAO.getBillByOrderId(orderId);
+                    if (billByOrder != null) {
+                        System.out.println("Bill ID: " + billByOrder.getBillId() + " | Total: " + billByOrder.getTotalAmount() + " | Final: " + billByOrder.getFinalAmount());
+                    } else {
+                        System.out.println("Bill not found for this order.");
+                    }
+                    break;
+
+                case 4:
+                    List<Bill> allUnpaidBills = billDAO.getUnpaidBills();
+                    System.out.println("---- Unpaid Bills ----");
+                    for (Bill b : allUnpaidBills) {
+                        System.out.println(b.getBillId() + ": Order " + b.getOrderId() + " | Final Amount: " + b.getFinalAmount());
+                    }
+                    break;
+
+                case 5:
+                    System.out.print("Enter Bill ID to update: ");
+                    int updateId = scanner.nextInt();
+                    Bill billToUpdate = billDAO.getBillById(updateId);
+                    if (billToUpdate != null) {
+                        System.out.print("New Total Amount: ");
+                        billToUpdate.setTotalAmount(scanner.nextDouble());
+                        System.out.print("New Discount: ");
+                        billToUpdate.setDiscount(scanner.nextDouble());
+                        System.out.print("New Tax: ");
+                        billToUpdate.setTax(scanner.nextDouble());
+                        billToUpdate.setFinalAmount(billToUpdate.getTotalAmount() - billToUpdate.getDiscount() + billToUpdate.getTax());
+                        billDAO.updateBill(billToUpdate);
+                        System.out.println("Bill updated.");
+                    } else {
+                        System.out.println("Bill not found.");
+                    }
+                    break;
+
+                case 6:
+                    System.out.print("Enter Bill ID to delete: ");
+                    int deleteId = scanner.nextInt();
+                    billDAO.deleteBill(deleteId);
+                    System.out.println("Bill deleted.");
+                    break;
+
+                case 7:
                     return;
 
                 default:
