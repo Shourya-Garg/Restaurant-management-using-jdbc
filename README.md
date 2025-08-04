@@ -1,764 +1,343 @@
-```mermaid
-classDiagram
-    %% Model Classes
-    class User {
-        -int userId
-        -String username
-        -String password
-        -String email
-        -String phone
-        -Role role
-        -boolean active
-        -Timestamp createdAt
-        +getUserId() int
-        +setUserId(int)
-        +getUsername() String
-        +setUsername(String)
-        +getRole() Role
-        +setRole(Role)
-    }
+# Restaurant Management System
 
-    class Customer {
-        -int customerId
-        -String name
-        -String phone
-        -String email
-        -boolean active
-        -Timestamp createdAt
-        +getCustomerId() int
-        +setCustomerId(int)
-        +getName() String
-        +setName(String)
-    }
+A comprehensive Java-based restaurant management system built with JDBC and PostgreSQL, featuring complete order management, billing, table booking, and customer management capabilities.
 
-    class Table {
-        -int tableId
-        -int tableNumber
-        -int capacity
-        -Status status
-        +getTableId() int
-        +setTableId(int)
-        +getTableNumber() int
-        +setTableNumber(int)
-        +getStatus() Status
-        +setStatus(Status)
-    }
+## 🚀 Features
 
-    class Order {
-        -int orderId
-        -int tableId
-        -int waiterId
-        -Timestamp orderTime
-        -Status status
-        +getOrderId() int
-        +setOrderId(int)
-        +getTableId() int
-        +setTableId(int)
-        +getStatus() Status
-        +setStatus(Status)
-    }
+### Core Functionality
+- **User Management**: Role-based access for Managers, Waiters, and Kitchen Staff
+- **Customer Management**: Customer registration and profile management
+- **Table Management**: Table allocation, status tracking, and capacity management
+- **Order Management**: Complete order lifecycle from placement to completion
+- **Billing System**: Automated bill generation with tax and discount calculations
+- **Payment Processing**: Multiple payment methods (Cash, Card, UPI, Wallet)
+- **Table Booking**: Advance table reservations with date/time management
+- **Sales Reporting**: Daily sales reports and analytics
 
-    class Bill {
-        -int billId
-        -int orderId
-        -double totalAmount
-        -double discount
-        -double tax
-        -double finalAmount
-        -PaymentStatus paymentStatus
-        -Timestamp generatedAt
-        +getBillId() int
-        +setBillId(int)
-        +getOrderId() int
-        +setOrderId(int)
-        +getFinalAmount() double
-        +setFinalAmount(double)
-    }
+### Technical Features
+- **DAO Pattern**: Clean separation of data access logic
+- **Service Layer**: Business logic abstraction
+- **Factory Pattern**: Centralized DAO creation and management
+- **PostgreSQL Integration**: Robust database connectivity
+- **Console-based UI**: Interactive command-line interface
 
-    class Payment {
-        -int paymentId
-        -int billId
-        -double amountPaid
-        -String paymentMethod
-        -Timestamp paymentTime
-        +getPaymentId() int
-        +setPaymentId(int)
-        +getBillId() int
-        +setBillId(int)
-        +getAmountPaid() double
-        +setAmountPaid(double)
-    }
+## 🏗️ Architecture
 
-    class MenuItem {
-        -int itemId
-        -String name
-        -String description
-        -double price
-        -String category
-        -boolean available
-        +getItemId() int
-        +setItemId(int)
-        +getName() String
-        +setName(String)
-        +getPrice() double
-        +setPrice(double)
-    }
+The project follows a layered architecture pattern:
 
-    class TableBooking {
-        -int bookingId
-        -int customerId
-        -int tableId
-        -Date bookingDate
-        -Time bookingTime
-        -Status status
-        +getBookingId() int
-        +setBookingId(int)
-        +getCustomerId() int
-        +setCustomerId(int)
-        +getTableId() int
-        +setTableId(int)
-    }
-
-    class SalesReport {
-        -int reportId
-        -Date reportDate
-        -double totalSales
-        -int totalOrders
-        -String topItems
-        -int generatedBy
-        +getReportId() int
-        +setReportId(int)
-        +getTotalSales() double
-        +setTotalSales(double)
-    }
-
-    %% DAO Interfaces
-    class UserDAO {
-        <<interface>>
-        +addUser(User)
-        +getUserById(int) User
-        +getAllUsers() List~User~
-        +updateUser(User)
-        +deleteUser(int)
-    }
-
-    class CustomerDAO {
-        <<interface>>
-        +addCustomer(Customer)
-        +getCustomerById(int) Customer
-        +getAllCustomers() List~Customer~
-        +updateCustomer(Customer)
-        +deleteCustomer(int)
-    }
-
-    class TableDAO {
-        <<interface>>
-        +addTable(Table)
-        +getTableById(int) Table
-        +getAllTables() List~Table~
-        +updateTable(Table)
-        +deleteTable(int)
-    }
-
-    class OrderDAO {
-        <<interface>>
-        +addOrder(Order)
-        +getOrderById(int) Order
-        +getAllOrders() List~Order~
-        +updateOrder(Order)
-        +deleteOrder(int)
-    }
-
-    class BillDAO {
-        <<interface>>
-        +generateBill(Bill)
-        +getBillByOrderId(int) Bill
-        +getBillById(int) Bill
-        +getUnpaidBills() List~Bill~
-        +updateBill(Bill)
-        +deleteBill(int)
-    }
-
-    class PaymentDAO {
-        <<interface>>
-        +recordPayment(Payment)
-        +getPaymentByBillId(int) Payment
-        +getAllPayments() List~Payment~
-    }
-
-    class MenuItemDAO {
-        <<interface>>
-        +addMenuItem(MenuItem)
-        +getMenuItemById(int) MenuItem
-        +getAllMenuItems() List~MenuItem~
-        +updateMenuItem(MenuItem)
-        +deleteMenuItem(int)
-    }
-
-    class SalesReportDAO {
-        <<interface>>
-        +generateReport(SalesReport)
-        +getAllReports() List~SalesReport~
-    }
-
-    %% DAO Implementations
-    class UserDAOImpl {
-        -Connection connection
-        +addUser(User)
-        +getUserById(int) User
-        +getAllUsers() List~User~
-        +updateUser(User)
-        +deleteUser(int)
-    }
-
-    class CustomerDAOImpl {
-        -Connection connection
-        +addCustomer(Customer)
-        +getCustomerById(int) Customer
-        +getAllCustomers() List~Customer~
-        +updateCustomer(Customer)
-        +deleteCustomer(int)
-    }
-
-    class BillDAOImpl {
-        -Connection connection
-        +generateBill(Bill)
-        +getBillByOrderId(int) Bill
-        +getBillById(int) Bill
-        +getUnpaidBills() List~Bill~
-        +updateBill(Bill)
-        +deleteBill(int)
-    }
-
-    class SalesReportDAOImpl {
-        -Connection connection
-        +generateReport(SalesReport)
-        +getAllReports() List~SalesReport~
-    }
-
-    %% Factory
-    class RestaurantDAOFactory {
-        -Connection connection
-        +getUserDAO() UserDAO
-        +getCustomerDAO() CustomerDAO
-        +getTableDAO() TableDAO
-        +getOrderDAO() OrderDAO
-        +getBillDAO() BillDAO
-        +getPaymentDAO() PaymentDAO
-        +getMenuItemDAO() MenuItemDAO
-        +getSalesReportDAO() SalesReportDAO
-    }
-
-    %% Services
-    class CustomerService {
-        <<interface>>
-        +addCustomer(Customer)
-        +getCustomerById(int) Customer
-        +getAllCustomers() List~Customer~
-        +updateCustomer(Customer)
-    }
-
-    class CustomerServiceImpl {
-        +addCustomer(Customer)
-        +getCustomerById(int) Customer
-        +getAllCustomers() List~Customer~
-        +updateCustomer(Customer)
-    }
-
-    class BillService {
-        <<interface>>
-        +generateBill(Bill)
-        +getBillByOrderId(int) Bill
-        +updatePaymentStatus(int, String)
-    }
-
-    class BillServiceImpl {
-        +generateBill(Bill)
-        +getBillByOrderId(int) Bill
-        +updatePaymentStatus(int, String)
-    }
-
-    %% Controllers
-    class CustomerController {
-        -CustomerService customerService
-        -Scanner scanner
-        +addCustomer()
-        +getCustomerById()
-        +listAllCustomers()
-    }
-
-    class SalesReportController {
-        -Scanner scanner
-        +generateReport()
-    }
-
-    %% Utility
-    class DatabaseUtil {
-        -String URL
-        -String USER
-        -String PASSWORD
-        +getConnection() Connection
-    }
-
-    class Main {
-        +main(String[])
-        +handleUserManagement()
-        +handleCustomerManagement()
-        +handleTableManagement()
-        +handleOrderManagement()
-        +handleBillManagement()
-        +handlePaymentManagement()
-    }
-
-    %% Relationships
-    Order --> Table : "placed at"
-    Order --> User : "served by"
-    Bill --> Order : "generated for"
-    Payment --> Bill : "pays"
-    TableBooking --> Customer : "made by"
-    TableBooking --> Table : "reserves"
-
-    
-    %% DAO Implementation relationships
-    UserDAOImpl ..|> UserDAO
-    CustomerDAOImpl ..|> CustomerDAO
-    BillDAOImpl ..|> BillDAO
-    SalesReportDAOImpl ..|> SalesReportDAO
-    
-    %% Service Implementation relationships
-    CustomerServiceImpl ..|> CustomerService
-    BillServiceImpl ..|> BillService
-    
-    %% Factory relationships
-    RestaurantDAOFactory --> UserDAO
-    RestaurantDAOFactory --> CustomerDAO
-    RestaurantDAOFactory --> TableDAO
-    RestaurantDAOFactory --> OrderDAO
-    RestaurantDAOFactory --> BillDAO
-    RestaurantDAOFactory --> PaymentDAO
-    RestaurantDAOFactory --> MenuItemDAO
-    RestaurantDAOFactory --> SalesReportDAO
-    
-    %% Controller relationships
-    CustomerController --> CustomerService
-    Main --> RestaurantDAOFactory
-    Main --> DatabaseUtil
-
-    %% Enums
-    class UserRole {
-        <<enumeration>>
-        Manager
-        Waiter
-        KitchenStaff
-    }
-
-    class TableStatus {
-        <<enumeration>>
-        Available
-        Occupied
-        Reserved
-    }
-
-    class OrderStatus {
-        <<enumeration>>
-        Placed
-        Preparing
-        Served
-        Completed
-    }
-
-    class PaymentStatus {
-        <<enumeration>>
-        Paid
-        Unpaid
-    }
-
-    User --> UserRole
-    Table --> TableStatus
-    Order --> OrderStatus
-    Bill --> PaymentStatus
+```
+src/main/java/org/example/
+├── model/              # Entity classes (User, Customer, Order, etc.)
+├── dao/               # Data Access Objects
+│   ├── interfaces/    # DAO interfaces
+│   └── impl/          # DAO implementations
+├── service/           # Business logic layer
+│   ├── interfaces/    # Service interfaces
+│   └── impl/          # Service implementations
+├── controller/        # UI controllers
+├── util/              # Utility classes (DatabaseUtil)
+└── Main.java          # Application entry point
 ```
 
+## 📋 Prerequisites
+
+- **Java 17** or higher
+- **PostgreSQL 12** or higher
+- **Maven 3.6** or higher
+
+## 🛠️ Installation & Setup
+
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd restaurant-management-system
+```
+
+### 2. Database Setup
+
+Create a PostgreSQL database and tables:
+
+```sql
+-- Create database
+CREATE DATABASE restaurant_management;
+
+-- Connect to the database and create tables
+\c restaurant_management;
+
+-- Users table
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone VARCHAR(15),
+    role VARCHAR(20) NOT NULL,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Customers table
+CREATE TABLE customers (
+    customer_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15),
+    email VARCHAR(100) UNIQUE,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tables table
+CREATE TABLE tables (
+    table_id SERIAL PRIMARY KEY,
+    table_number INTEGER UNIQUE NOT NULL,
+    capacity INTEGER NOT NULL,
+    status VARCHAR(20) DEFAULT 'Available',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Orders table
+CREATE TABLE orders (
+    order_id SERIAL PRIMARY KEY,
+    table_id INTEGER REFERENCES tables(table_id),
+    waiter_id INTEGER REFERENCES users(user_id),
+    order_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(20) DEFAULT 'Placed',
+    total_amount DECIMAL(10,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Bills table
+CREATE TABLE bills (
+    bill_id SERIAL PRIMARY KEY,
+    order_id INTEGER REFERENCES orders(order_id),
+    total_amount DECIMAL(10,2) NOT NULL,
+    discount DECIMAL(10,2) DEFAULT 0,
+    tax DECIMAL(10,2) DEFAULT 0,
+    final_amount DECIMAL(10,2) NOT NULL,
+    payment_status VARCHAR(20) DEFAULT 'Unpaid',
+    generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Payments table
+CREATE TABLE payments (
+    payment_id SERIAL PRIMARY KEY,
+    bill_id INTEGER REFERENCES bills(bill_id),
+    amount_paid DECIMAL(10,2) NOT NULL,
+    payment_method VARCHAR(20) NOT NULL,
+    transaction_id VARCHAR(100),
+    payment_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(20) DEFAULT 'Successful'
+);
+
+-- Table Bookings table
+CREATE TABLE table_bookings (
+    booking_id SERIAL PRIMARY KEY,
+    customer_id INTEGER REFERENCES customers(customer_id),
+    table_id INTEGER REFERENCES tables(table_id),
+    booking_date DATE NOT NULL,
+    booking_time TIME NOT NULL,
+    party_size INTEGER,
+    status VARCHAR(20) DEFAULT 'Confirmed',
+    special_requests TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 3. Configure Database Connection
+
+Update database credentials in `src/main/java/org/example/util/DatabaseUtil.java`:
+
+```java
+private static final String URL = "jdbc:postgresql://localhost:5432/restaurant_management";
+private static final String USER = "your_username";
+private static final String PASSWORD = "your_password";
+```
+
+### 4. Build and Run
+
+```bash
+# Compile the project
+mvn clean compile
+
+# Run the application
+mvn exec:java -Dexec.mainClass="org.example.Main"
+```
+
+## 🎯 Usage
+
+### Main Menu Options
+
+When you run the application, you'll see:
+
+```
+=== Restaurant Management System ===
+1. User Management
+2. Customer Management
+3. Table Management
+4. Order Management
+5. Bill Management
+6. Payment Management
+7. Table Booking Management
+8. Exit
+```
+
+### Sample Workflows
+
+#### 1. Setting Up the System
+```
+1. Add Users (Manager, Waiters, Kitchen Staff)
+2. Add Tables (Configure table numbers and capacity)
+3. Add Customers (Register customer profiles)
+```
+
+#### 2. Order Management Workflow
+```
+1. Customer arrives → Check available tables
+2. Seat customer → Waiter takes order
+3. Order placed → Status: "Placed"
+4. Kitchen prepares → Status: "Preparing"
+5. Food served → Status: "Served"
+6. Customer finishes → Status: "Completed"
+```
+
+#### 3. Billing Workflow
+```
+1. Generate bill for completed order
+2. Apply discounts and calculate tax
+3. Present bill to customer
+4. Process payment (Cash/Card/UPI/Wallet)
+5. Update payment status
+6. Clear table for next customer
+```
+
+#### 4. Table Booking Workflow
+```
+1. Customer requests reservation
+2. Check table availability for date/time
+3. Create booking record
+4. Confirm reservation
+5. Update table status to "Reserved"
+```
+
+## 📊 Database Schema
+
+### Key Entities
+
+- **Users**: System users with roles (Manager, Waiter, KitchenStaff)
+- **Customers**: Restaurant customers and their profiles
+- **Tables**: Restaurant tables with capacity and status
+- **Orders**: Customer orders with items and status tracking
+- **Bills**: Generated bills with tax and discount calculations
+- **Payments**: Payment records with multiple payment methods
+- **Table Bookings**: Advance reservations with date/time
+
+### Entity Relationships
 
 ```mermaid
 erDiagram
-    %% Users table
-    users {
-        int user_id PK
-        varchar username UK
-        varchar password
-        varchar email UK
-        varchar phone
-        varchar role
-        boolean is_active
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    %% Customers table
-    customers {
-        int customer_id PK
-        varchar name
-        varchar phone
-        varchar email UK
-        boolean is_active
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    %% Tables table
-    tables {
-        int table_id PK
-        int table_number UK
-        int capacity
-        varchar status
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    %% Menu Items table
-    menu_items {
-        int item_id PK
-        varchar name
-        text description
-        decimal price
-        varchar category
-        boolean is_available
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    %% Orders table
-    orders {
-        int order_id PK
-        int table_id FK
-        int waiter_id FK
-        timestamp order_time
-        varchar status
-        decimal total_amount
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    %% Order Items table (junction table for orders and menu items)
-    order_items {
-        int order_item_id PK
-        int order_id FK
-        int item_id FK
-        int quantity
-        decimal unit_price
-        decimal subtotal
-        text special_instructions
-    }
-
-    %% Bills table
-    bills {
-        int bill_id PK
-        int order_id FK
-        decimal total_amount
-        decimal discount
-        decimal tax
-        decimal final_amount
-        varchar payment_status
-        timestamp generated_at
-        timestamp updated_at
-    }
-
-    %% Payments table
-    payments {
-        int payment_id PK
-        int bill_id FK
-        decimal amount_paid
-        varchar payment_method
-        varchar transaction_id
-        timestamp payment_time
-        varchar status
-    }
-
-    %% Table Bookings table
-    table_bookings {
-        int booking_id PK
-        int customer_id FK
-        int table_id FK
-        date booking_date
-        time booking_time
-        int party_size
-        varchar status
-        text special_requests
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    %% Employees table
-    employees {
-        int employee_id PK
-        int user_id FK
-        varchar name
-        varchar role
-        varchar contact_number
-        varchar email
-        varchar designation
-        time shift_start
-        time shift_end
-        date joined_date
-        boolean is_active
-    }
-
-    %% Sales Reports table
-    sales_reports {
-        int report_id PK
-        date report_date
-        decimal total_sales
-        int total_orders
-        text top_items
-        int generated_by FK
-        timestamp generated_at
-    }
-
-   
-
-
-    %% Relationships
     users ||--o{ orders : "waiter serves"
-    users ||--o{ employees : "has profile"
-    users ||--o{ sales_reports : "generates"
-    
     customers ||--o{ table_bookings : "makes"
-    
     tables ||--o{ orders : "placed at"
     tables ||--o{ table_bookings : "reserved"
-    
-    menu_items ||--o{ order_items : "included in"
-    
     orders ||--|| bills : "generates"
-    orders ||--o{ order_items : "contains"
-    
     bills ||--o{ payments : "paid through"
-    
-  
-    
-    
-    
-    table_bookings }o--|| customers : "made by"
-    table_bookings }o--|| tables : "reserves"
-    
-    employees }o--|| users : "profile of"
-    
-    sales_reports }o--|| users : "generated by"
-    
-    payments }o--|| bills : "settles"
-    
-  
 ```
 
-```mermaid
-flowchart TD
-    A[Customer Arrives] --> B{Table Available?}
-    B -->|No| C[Wait for Table]
-    C --> B
-    B -->|Yes| D[Seat Customer at Table]
-    
-    D --> E[Waiter Approaches Table]
-    E --> F[Present Menu to Customer]
-    F --> G[Customer Reviews Menu]
-    
-    G --> H{Ready to Order?}
-    H -->|No| I[Customer Needs More Time]
-    I --> G
-    H -->|Yes| J[Customer Places Order]
-    
-    J --> K[Waiter Records Order Details]
-    K --> L[Enter Table ID in System]
-    L --> M[Enter Waiter ID]
-    M --> N[Add Menu Items to Order]
-    
-    N --> O{More Items?}
-    O -->|Yes| P[Add Another Item]
-    P --> N
-    O -->|No| Q[Calculate Order Total]
-    
-    Q --> R[Set Order Status to 'Placed']
-    R --> S[Save Order to Database]
-    S --> T[Update Table Status to 'Occupied']
-    
-    T --> U[Send Order to Kitchen]
-    U --> V[Kitchen Receives Order]
-    V --> W[Update Order Status to 'Preparing']
-    
-    W --> X[Kitchen Prepares Food]
-    X --> Y[Update Order Status to 'Served']
-    Y --> Z[Waiter Delivers Food]
-    Z --> AA[Update Order Status to 'Completed']
-    
-    AA --> BB[Order Process Complete]
-    
-    style A fill:#e1f5fe
-    style BB fill:#c8e6c9
-    style U fill:#fff3e0
-    style V fill:#fff3e0
+## 🔧 Configuration
+
+### Application Properties
+- Database URL: `jdbc:postgresql://localhost:5432/restaurant_management`
+- Driver: `org.postgresql.Driver`
+- Connection pooling: Basic connection management
+
+### User Roles and Permissions
+- **Manager**: Full system access, user management, reports
+- **Waiter**: Order management, customer service, billing
+- **KitchenStaff**: Order status updates, kitchen operations
+
+## 🎨 System Diagrams
+
+The project includes comprehensive Mermaid diagrams:
+
+### Class Diagram
+Shows the complete system architecture with all classes, interfaces, and relationships.
+
+### ER Diagram
+Displays database schema with tables, fields, and relationships.
+
+### Activity Diagrams
+- Order Placement Workflow
+- Billing Process Workflow
+- Table Booking Workflow
+
+## 📈 Future Enhancements
+
+- [ ] **Web Interface**: Spring Boot-based web application
+- [ ] **Menu Management**: Complete menu item management system
+- [ ] **Inventory Tracking**: Stock management and supplier integration
+- [ ] **Real-time Updates**: WebSocket-based real-time order tracking
+- [ ] **Mobile App**: Android/iOS app for waiters and managers
+- [ ] **Advanced Reporting**: Detailed analytics and business intelligence
+- [ ] **Multi-location Support**: Support for restaurant chains
+- [ ] **Integration APIs**: POS system and third-party integrations
+
+## 🧪 Testing
+
+```bash
+# Run tests (when implemented)
+mvn test
+
+# Generate test coverage report
+mvn jacoco:report
 ```
-``` mermaid
-flowchart TD
-    A[Customer Requests Bill] --> B[Waiter Initiates Billing]
-    B --> C[Retrieve Order Details]
-    C --> D[Get Order ID from System]
-    
-    D --> E[Calculate Base Amount]
-    E --> F[Enter Total Amount]
-    F --> G{Apply Discount?}
-    
-    G -->|Yes| H[Enter Discount Amount]
-    G -->|No| I[Set Discount to 0]
-    H --> J[Calculate After Discount]
-    I --> J
-    
-    J --> K{Apply Tax?}
-    K -->|Yes| L[Calculate Tax Amount]
-    K -->|No| M[Set Tax to 0]
-    L --> N[Calculate Final Amount]
-    M --> N
-    
-    N --> O[Final Amount = Total - Discount + Tax]
-    O --> P[Set Payment Status to 'Unpaid']
-    P --> Q[Set Generated Timestamp]
-    
-    Q --> R[Save Bill to Database]
-    R --> S{Bill Saved Successfully?}
-    
-    S -->|No| T[Display Error Message]
-    T --> U[Retry Bill Generation]
-    U --> R
-    
-    S -->|Yes| V[Print Bill for Customer]
-    V --> W[Present Bill to Customer]
-    W --> X[Customer Reviews Bill]
-    
-    X --> Y{Bill Acceptable?}
-    Y -->|No| Z[Customer Disputes Bill]
-    Z --> AA[Manager Reviews Dispute]
-    AA --> BB[Adjust Bill if Necessary]
-    BB --> V
-    
-    Y -->|Yes| CC[Customer Ready to Pay]
-    CC --> DD[Proceed to Payment]
-    
-    style A fill:#e1f5fe
-    style DD fill:#c8e6c9
-    style T fill:#ffcdd2
-    style Z fill:#fff3e0
-```
-``` mermaid
-flowchart TD
-    A[Customer Wants to Book Table] --> B{Booking Method}
-    B -->|Phone Call| C[Staff Receives Call]
-    B -->|In Person| D[Customer Visits Restaurant]
-    B -->|Online| E[Customer Uses Online System]
-    
-    C --> F[Staff Opens Booking System]
-    D --> F
-    E --> F
-    
-    F --> G[Enter Customer Details]
-    G --> H{Existing Customer?}
-    H -->|No| I[Create New Customer Record]
-    H -->|Yes| J[Retrieve Customer ID]
-    I --> K[Get Customer ID]
-    J --> K
-    
-    K --> L[Customer Specifies Requirements]
-    L --> M[Enter Booking Date]
-    M --> N[Enter Booking Time]
-    N --> O[Enter Party Size]
-    
-    O --> P[Check Table Availability]
-    P --> Q{Tables Available?}
-    
-    Q -->|No| R[Suggest Alternative Times]
-    R --> S{Customer Accepts Alternative?}
-    S -->|No| T[End Booking Process]
-    S -->|Yes| U[Update Booking Details]
-    U --> P
-    
-    Q -->|Yes| V[Display Available Tables]
-    V --> W[Select Suitable Table]
-    W --> X[Enter Table ID]
-    
-    X --> Y[Set Booking Status to 'Confirmed']
-    Y --> Z[Set Created Timestamp]
-    Z --> AA[Save Booking to Database]
-    
-    AA --> BB{Booking Saved Successfully?}
-    BB -->|No| CC[Display Error Message]
-    CC --> DD[Retry Booking]
-    DD --> AA
-    
-    BB -->|Yes| EE[Generate Booking Confirmation]
-    EE --> FF[Update Table Status to 'Reserved']
-    FF --> GG{Notification Method}
-    
-    GG -->|SMS| HH[Send SMS Confirmation]
-    GG -->|Email| II[Send Email Confirmation]
-    GG -->|Phone| JJ[Call Customer to Confirm]
-    
-    HH --> KK[Booking Process Complete]
-    II --> KK
-    JJ --> KK
-    
-    KK --> LL[Set Reminder for Booking Date]
-    LL --> MM[Monitor for Customer Arrival]
-    
-    style A fill:#e1f5fe
-    style KK fill:#c8e6c9
-    style T fill:#ffcdd2
-    style CC fill:#ffcdd2
-    style LL fill:#fff3e0
-```
-``` mermaid
-flowchart TD
-    A[Customer Enters Restaurant] --> B{Has Reservation?}
-    B -->|Yes| C[Check Booking System]
-    B -->|No| D[Check Table Availability]
-    
-    C --> E{Booking Found?}
-    E -->|No| F[Handle Booking Issue]
-    E -->|Yes| G[Confirm Booking Details]
-    
-    D --> H{Table Available?}
-    H -->|No| I[Add to Waiting List]
-    H -->|Yes| J[Assign Table]
-    
-    F --> K[Manager Assistance]
-    G --> J
-    I --> L[Notify When Table Ready]
-    L --> J
-    K --> J
-    
-    J --> M[Update Table Status to 'Occupied']
-    M --> N[Start Order Process]
-    N --> O[Take Order]
-    O --> P[Send to Kitchen]
-    
-    P --> Q[Prepare Food]
-    Q --> R[Serve Food]
-    R --> S[Customer Dining]
-    
-    S --> T{Customer Finished?}
-    T -->|No| U[Continue Service]
-    U --> T
-    T -->|Yes| V[Generate Bill]
-    
-    V --> W[Present Bill]
-    W --> X[Process Payment]
-    X --> Y[Update Bill Status to 'Paid']
-    
-    Y --> Z[Clear Table]
-    Z --> AA[Update Table Status to 'Available']
-    AA --> BB[Clean Table for Next Customer]
-    
-    BB --> CC[Process Complete]
-    
-    style A fill:#e1f5fe
-    style CC fill:#c8e6c9
-    style I fill:#fff3e0
-    style F fill:#ffcdd2
-```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Coding Standards
+- Follow Java naming conventions
+- Use meaningful variable and method names
+- Add comments for complex business logic
+- Maintain consistent indentation
+
+## 🐛 Known Issues
+
+- Console input validation could be improved
+- Error handling needs enhancement for database connection failures
+- Transaction management not implemented for complex operations
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👥 Authors
+
+- **Your Name** - *Initial work* - [YourGitHub](https://github.com/yourusername)
+
+## 🙏 Acknowledgments
+
+- PostgreSQL team for the robust database system
+- Maven for dependency management
+- Java community for excellent documentation
+- Mermaid.js for beautiful diagrams
+
+## 📞 Support
+
+For support and questions:
+- Create an issue in this repository
+- Email: your-email@example.com
+
+---
+
+**Built with ❤️ for efficient restaurant management**
