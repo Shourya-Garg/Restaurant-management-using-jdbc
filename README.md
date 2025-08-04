@@ -287,56 +287,8 @@ Displays database schema with tables, fields, and relationships.
 - [ ] **Multi-location Support**: Support for restaurant chains
 - [ ] **Integration APIs**: POS system and third-party integrations
 
-## 🧪 Testing
 
-```bash
-# Run tests (when implemented)
-mvn test
 
-# Generate test coverage report
-mvn jacoco:report
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Coding Standards
-- Follow Java naming conventions
-- Use meaningful variable and method names
-- Add comments for complex business logic
-- Maintain consistent indentation
-
-## 🐛 Known Issues
-
-- Console input validation could be improved
-- Error handling needs enhancement for database connection failures
-- Transaction management not implemented for complex operations
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👥 Authors
-
-- **Your Name** - *Initial work* - [YourGitHub](https://github.com/yourusername)
-
-## 🙏 Acknowledgments
-
-- PostgreSQL team for the robust database system
-- Maven for dependency management
-- Java community for excellent documentation
-- Mermaid.js for beautiful diagrams
-
-## 📞 Support
-
-For support and questions:
-- Create an issue in this repository
-- Email: your-email@example.com
 
 ---
 
