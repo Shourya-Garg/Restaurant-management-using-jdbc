@@ -515,41 +515,8 @@ erDiagram
         timestamp generated_at
     }
 
-    %% Inventory table (additional for restaurant management)
-    inventory {
-        int inventory_id PK
-        varchar item_name
-        varchar category
-        int quantity_in_stock
-        varchar unit_of_measure
-        decimal cost_per_unit
-        date expiry_date
-        int reorder_level
-        timestamp last_updated
-    }
+   
 
-    %% Suppliers table (additional for restaurant management)
-    suppliers {
-        int supplier_id PK
-        varchar supplier_name
-        varchar contact_person
-        varchar phone
-        varchar email
-        text address
-        varchar status
-        timestamp created_at
-    }
-
-    %% Purchase Orders table (additional for restaurant management)
-    purchase_orders {
-        int purchase_order_id PK
-        int supplier_id FK
-        date order_date
-        decimal total_amount
-        varchar status
-        date expected_delivery
-        timestamp created_at
-    }
 
     %% Relationships
     users ||--o{ orders : "waiter serves"
@@ -568,11 +535,9 @@ erDiagram
     
     bills ||--o{ payments : "paid through"
     
-    suppliers ||--o{ purchase_orders : "receives"
+  
     
-    %% Additional relationships for better data integrity
-    order_items }o--|| orders : "belongs to"
-    order_items }o--|| menu_items : "references"
+    
     
     table_bookings }o--|| customers : "made by"
     table_bookings }o--|| tables : "reserves"
@@ -583,7 +548,7 @@ erDiagram
     
     payments }o--|| bills : "settles"
     
-    purchase_orders }o--|| suppliers : "placed with"
+  
 ```
 
 ```mermaid
