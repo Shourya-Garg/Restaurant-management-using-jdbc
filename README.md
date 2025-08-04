@@ -371,18 +371,719 @@ erDiagram
 
 ## 🎨 System Diagrams
 
-The project includes comprehensive Mermaid diagrams:
-
 ### Class Diagram
-Shows the complete system architecture with all classes, interfaces, and relationships.
 
-### ER Diagram
-Displays database schema with tables, fields, and relationships.
+```mermaid
+classDiagram
+    %% Model Classes
+    class User {
+        -int userId
+        -String username
+        -String password
+        -String email
+        -String phone
+        -Role role
+        -boolean isActive
+        -Timestamp createdAt
+        +getUserId() int
+        +setUserId(int) void
+        +getUsername() String
+        +setUsername(String) void
+        +getRole() Role
+        +setRole(Role) void
+    }
+
+    class Customer {
+        -int customerId
+        -String name
+        -String phone
+        -String email
+        -boolean isActive
+        -Timestamp createdAt
+        +getCustomerId() int
+        +setCustomerId(int) void
+        +getName() String
+        +setName(String) void
+        +getPhone() String
+        +setPhone(String) void
+    }
+
+    class Table {
+        -int tableId
+        -int tableNumber
+        -int capacity
+        -Status status
+        +getTableId() int
+        +setTableId(int) void
+        +getTableNumber() int
+        +setTableNumber(int) void
+        +getStatus() Status
+        +setStatus(Status) void
+    }
+
+    class Order {
+        -int orderId
+        -int tableId
+        -int waiterId
+        -Timestamp orderTime
+        -Status status
+        -double totalAmount
+        +getOrderId() int
+        +setOrderId(int) void
+        +getTableId() int
+        +setTableId(int) void
+        +getStatus() Status
+        +setStatus(Status) void
+    }
+
+    class OrderItem {
+        -int orderItemId
+        -int orderId
+        -int menuItemId
+        -int quantity
+        -Status status
+        +getOrderItemId() int
+        +setOrderItemId(int) void
+        +getQuantity() int
+        +setQuantity(int) void
+    }
+
+    class Bill {
+        -int billId
+        -int orderId
+        -double totalAmount
+        -double discount
+        -double tax
+        -double finalAmount
+        -PaymentStatus paymentStatus
+        -Timestamp generatedAt
+        +getBillId() int
+        +setBillId(int) void
+        +calculateFinalAmount() void
+        +getPaymentStatus() PaymentStatus
+    }
+
+    class Payment {
+        -int paymentId
+        -int billId
+        -PaymentMethod paymentMethod
+        -double amountPaid
+        -Timestamp paymentTime
+        -Status status
+        +getPaymentId() int
+        +setPaymentId(int) void
+        +getPaymentMethod() PaymentMethod
+        +processPayment() void
+    }
+
+    class TableBooking {
+        -int bookingId
+        -int customerId
+        -int tableId
+        -Date bookingDate
+        -Time bookingTime
+        -int partySize
+        -Status status
+        -Timestamp createdAt
+        +getBookingId() int
+        +setBookingId(int) void
+        +confirmBooking() void
+        +cancelBooking() void
+    }
+
+    %% DAO Interfaces
+    class UserDao {
+        <<interface>>
+        +addUser(User) void
+        +getUserById(int) User
+        +getAllUsers() List~User~
+        +updateUser(User) void
+        +deleteUser(int) void
+    }
+
+    class OrderDao {
+        <<interface>>
+        +addOrder(Order) void
+        +getOrderById(int) Order
+        +getAllOrders() List~Order~
+        +updateOrder(Order) void
+        +deleteOrder(int) void
+    }
+
+    class BillDao {
+        <<interface>>
+        +generateBill(Bill) void
+        +getBillByOrderId(int) Bill
+        +getUnpaidBills() List~Bill~
+        +updateBill(Bill) void
+    }
+
+    %% DAO Implementations
+    class UserDaoImpl {
+        -Connection connection
+        +addUser(User) void
+        +getUserById(int) User
+        +getAllUsers() List~User~
+        +updateUser(User) void
+        +deleteUser(int) void
+    }
+
+    class OrderDaoImpl {
+        -Connection connection
+        +addOrder(Order) void
+        +getOrderById(int) Order
+        +getAllOrders() List~Order~
+        +updateOrder(Order) void
+        +deleteOrder(int) void
+    }
+
+    %% Service Interfaces
+    class OrderService {
+        <<interface>>
+        +placeOrder(Order) void
+        +getOrderById(int) Order
+        +getAllOrders() List~Order~
+        +updateOrder(Order) void
+        +deleteOrder(int) void
+    }
+
+    %% Service Implementations
+    class OrderServiceImpl {
+        -List~Order~ orders
+        +placeOrder(Order) void
+        +getOrderById(int) Order
+        +getAllOrders() List~Order~
+        +updateOrder(Order) void
+        +deleteOrder(int) void
+    }
+
+    %% Controllers
+    class OrderController {
+        -OrderService orderService
+        -Scanner scanner
+        +placeOrder() void
+        +viewOrderById() void
+    }
+
+    class PaymentController {
+        -PaymentService paymentService
+        -Scanner scanner
+        +makePayment() void
+        +viewPaymentHistory() void
+    }
+
+    %% Factory
+    class RestaurantDaoFactory {
+        +getUserDAO() UserDao
+        +getOrderDAO() OrderDao
+        +getBillDAO() BillDao
+        +getPaymentDAO() PaymentDao
+        +getTableDAO() TableDao
+        +getCustomerDAO() CustomerDao
+        +getTableBookingDAO() TableBookingDao
+    }
+
+    %% Utility
+    class DatabaseUtil {
+        -String URL
+        -String USER
+        -String PASSWORD
+        +getConnection() Connection
+        +closeConnection(Connection) void
+    }
+
+    %% Enums
+    class UserRole {
+        <<enumeration>>
+        Manager
+        Waiter
+        KitchenStaff
+        Admin
+    }
+
+    class OrderStatus {
+        <<enumeration>>
+        Placed
+        Preparing
+        Served
+        Completed
+    }
+
+    class TableStatus {
+        <<enumeration>>
+        Available
+        Occupied
+        Booked
+        Reserved
+    }
+
+    class PaymentMethod {
+        <<enumeration>>
+        Cash
+        Card
+        UPI
+        Wallet
+    }
+
+    %% Relationships
+    User ||--|| UserRole : has
+    Order ||--|| OrderStatus : has
+    Table ||--|| TableStatus : has
+    Payment ||--|| PaymentMethod : uses
+    
+    Order ||--o{ OrderItem : contains
+    Order ||--|| Bill : generates
+    Bill ||--o{ Payment : receives
+    
+    Customer ||--o{ TableBooking : makes
+    Table ||--o{ TableBooking : reserved
+    Table ||--o{ Order : placed_at
+    User ||--o{ Order : serves
+    
+    UserDao <|.. UserDaoImpl : implements
+    OrderDao <|.. OrderDaoImpl : implements
+    OrderService <|.. OrderServiceImpl : implements
+    
+    OrderController --> OrderService : uses
+    PaymentController --> PaymentService : uses
+    
+    RestaurantDaoFactory --> UserDao : creates
+    RestaurantDaoFactory --> OrderDao : creates
+    RestaurantDaoFactory --> BillDao : creates
+    
+    UserDaoImpl --> DatabaseUtil : uses
+    OrderDaoImpl --> DatabaseUtil : uses
+```
+
+### Use Case Diagram
+
+```mermaid
+graph TB
+    %% Actors
+    Manager[👨‍💼 Manager]
+    Waiter[👨‍🍳 Waiter]
+    KitchenStaff[👨‍🍳 Kitchen Staff]
+    Customer[👤 Customer]
+    
+    %% Use Cases
+    subgraph "Restaurant Management System"
+        %% User Management
+        UC1[Manage Users]
+        UC2[View User Reports]
+        
+        %% Customer Management
+        UC3[Register Customer]
+        UC4[Update Customer Info]
+        UC5[View Customer History]
+        
+        %% Table Management
+        UC6[Manage Tables]
+        UC7[Check Table Status]
+        UC8[Update Table Status]
+        
+        %% Order Management
+        UC9[Take Order]
+        UC10[View Orders]
+        UC11[Update Order Status]
+        UC12[Cancel Order]
+        
+        %% Billing
+        UC13[Generate Bill]
+        UC14[Apply Discounts]
+        UC15[Calculate Tax]
+        
+        %% Payment
+        UC16[Process Payment]
+        UC17[View Payment History]
+        UC18[Handle Payment Issues]
+        
+        %% Table Booking
+        UC19[Book Table]
+        UC20[Confirm Booking]
+        UC21[Cancel Booking]
+        UC22[Check Availability]
+        
+        %% Kitchen Operations
+        UC23[View Kitchen Orders]
+        UC24[Update Preparation Status]
+        UC25[Mark Order Ready]
+        
+        %% Reporting
+        UC26[Generate Sales Report]
+        UC27[View Analytics]
+    end
+    
+    %% Manager relationships
+    Manager --> UC1
+    Manager --> UC2
+    Manager --> UC6
+    Manager --> UC26
+    Manager --> UC27
+    Manager --> UC18
+    
+    %% Waiter relationships
+    Waiter --> UC3
+    Waiter --> UC4
+    Waiter --> UC5
+    Waiter --> UC7
+    Waiter --> UC8
+    Waiter --> UC9
+    Waiter --> UC10
+    Waiter --> UC11
+    Waiter --> UC12
+    Waiter --> UC13
+    Waiter --> UC14
+    Waiter --> UC15
+    Waiter --> UC16
+    Waiter --> UC17
+    Waiter --> UC19
+    Waiter --> UC20
+    Waiter --> UC21
+    Waiter --> UC22
+    
+    %% Kitchen Staff relationships
+    KitchenStaff --> UC23
+    KitchenStaff --> UC24
+    KitchenStaff --> UC25
+    KitchenStaff --> UC10
+    
+    %% Customer relationships (indirect)
+    Customer -.-> UC19
+    Customer -.-> UC9
+    Customer -.-> UC16
+    
+    %% Include relationships
+    UC13 --> UC14 : includes
+    UC13 --> UC15 : includes
+    UC9 --> UC7 : includes
+    UC19 --> UC22 : includes
+```
+
+### Sequence Diagrams
+
+#### Order Placement Sequence
+
+```mermaid
+sequenceDiagram
+    participant C as Customer
+    participant W as Waiter
+    participant S as System
+    participant DB as Database
+    participant K as Kitchen
+    
+    C->>W: Requests to place order
+    W->>S: Check available tables
+    S->>DB: Query tables with status 'Available'
+    DB-->>S: Return available tables
+    S-->>W: Display available tables
+    
+    W->>S: Select table for customer
+    S->>DB: Check table availability
+    DB-->>S: Confirm table is available
+    
+    W->>S: Enter order details
+    Note over W,S: Table ID, Waiter ID, Menu Items
+    
+    S->>S: Create Order object
+    S->>S: Set status to 'Placed'
+    S->>DB: Save order to database
+    DB-->>S: Order saved successfully
+    
+    S->>DB: Update table status to 'Occupied'
+    DB-->>S: Table status updated
+    
+    S->>K: Send order to kitchen
+    K-->>S: Order received
+    S->>DB: Update order status to 'Preparing'
+    
+    S-->>W: Order placed successfully
+    W-->>C: Order confirmation
+    
+    Note over K: Kitchen prepares food
+    K->>S: Update order status to 'Served'
+    S->>DB: Update order status
+    
+    W->>C: Serve food
+    W->>S: Update order status to 'Completed'
+    S->>DB: Update order status
+```
+
+#### Billing Process Sequence
+
+```mermaid
+sequenceDiagram
+    participant C as Customer
+    participant W as Waiter
+    participant S as System
+    participant DB as Database
+    participant P as Payment System
+    
+    C->>W: Request bill
+    W->>S: Generate bill for order
+    S->>DB: Get order details
+    DB-->>S: Return order information
+    
+    S->>S: Calculate total amount
+    W->>S: Enter discount (if any)
+    S->>S: Apply discount
+    S->>S: Calculate tax
+    S->>S: Calculate final amount
+    
+    S->>S: Create Bill object
+    S->>DB: Save bill to database
+    DB-->>S: Bill saved successfully
+    
+    S-->>W: Bill generated
+    W->>C: Present bill
+    
+    C->>W: Choose payment method
+    W->>S: Process payment
+    S->>P: Process payment transaction
+    P-->>S: Payment confirmation
+    
+    S->>S: Create Payment record
+    S->>DB: Save payment details
+    S->>DB: Update bill status to 'Paid'
+    DB-->>S: Payment recorded
+    
+    S->>DB: Update table status to 'Available'
+    DB-->>S: Table status updated
+    
+    S-->>W: Payment successful
+    W-->>C: Payment receipt
+```
+
+#### Table Booking Sequence
+
+```mermaid
+sequenceDiagram
+    participant C as Customer
+    participant S as Staff
+    participant Sys as System
+    participant DB as Database
+    
+    C->>S: Request table booking
+    S->>Sys: Check customer in system
+    Sys->>DB: Query customer by phone/email
+    
+    alt Customer exists
+        DB-->>Sys: Return customer details
+        Sys-->>S: Customer found
+    else New customer
+        DB-->>Sys: Customer not found
+        S->>Sys: Create new customer
+        Sys->>DB: Save customer details
+        DB-->>Sys: Customer created
+    end
+    
+    S->>Sys: Enter booking details
+    Note over S,Sys: Date, Time, Party Size
+    
+    Sys->>DB: Check table availability
+    DB-->>Sys: Return available tables
+    
+    alt Tables available
+        Sys-->>S: Show available tables
+        S->>Sys: Select table
+        Sys->>Sys: Create booking record
+        Sys->>DB: Save booking
+        DB-->>Sys: Booking confirmed
+        
+        Sys->>DB: Update table status to 'Reserved'
+        DB-->>Sys: Table status updated
+        
+        Sys-->>S: Booking successful
+        S-->>C: Booking confirmation
+        
+        Note over Sys: Send confirmation SMS/Email
+        
+    else No tables available
+        Sys-->>S: No tables available
+        S->>C: Suggest alternative times
+        
+        alt Customer accepts alternative
+            C->>S: Accept new time
+            S->>Sys: Update booking details
+            Note over Sys: Repeat availability check
+        else Customer declines
+            C->>S: Cancel booking request
+            S-->>C: Booking cancelled
+        end
+    end
+```
 
 ### Activity Diagrams
-- Order Placement Workflow
-- Billing Process Workflow
-- Table Booking Workflow
+
+#### Order Placement Workflow
+
+```mermaid
+flowchart TD
+    A[Customer Arrives] --> B{Table Available?}
+    B -->|No| C[Wait for Table]
+    C --> B
+    B -->|Yes| D[Seat Customer at Table]
+    
+    D --> E[Waiter Approaches Table]
+    E --> F[Present Menu to Customer]
+    F --> G[Customer Reviews Menu]
+    
+    G --> H{Ready to Order?}
+    H -->|No| I[Customer Needs More Time]
+    I --> G
+    H -->|Yes| J[Customer Places Order]
+    
+    J --> K[Waiter Records Order Details]
+    K --> L[Enter Table ID in System]
+    L --> M[Enter Waiter ID]
+    M --> N[Add Menu Items to Order]
+    
+    N --> O{More Items?}
+    O -->|Yes| P[Add Another Item]
+    P --> N
+    O -->|No| Q[Calculate Order Total]
+    
+    Q --> R[Set Order Status to 'Placed']
+    R --> S[Save Order to Database]
+    S --> T[Update Table Status to 'Occupied']
+    
+    T --> U[Send Order to Kitchen]
+    U --> V[Kitchen Receives Order]
+    V --> W[Update Order Status to 'Preparing']
+    
+    W --> X[Kitchen Prepares Food]
+    X --> Y[Update Order Status to 'Served']
+    Y --> Z[Waiter Delivers Food]
+    Z --> AA[Update Order Status to 'Completed']
+    
+    AA --> BB[Order Process Complete]
+    
+    style A fill:#e1f5fe
+    style BB fill:#c8e6c9
+    style U fill:#fff3e0
+    style V fill:#fff3e0
+```
+
+#### Billing Workflow
+
+```mermaid
+flowchart TD
+    A[Customer Requests Bill] --> B[Waiter Initiates Billing]
+    B --> C[Retrieve Order Details]
+    C --> D[Get Order ID from System]
+    
+    D --> E[Calculate Base Amount]
+    E --> F[Enter Total Amount]
+    F --> G{Apply Discount?}
+    
+    G -->|Yes| H[Enter Discount Amount]
+    G -->|No| I[Set Discount to 0]
+    H --> J[Calculate After Discount]
+    I --> J
+    
+    J --> K{Apply Tax?}
+    K -->|Yes| L[Calculate Tax Amount]
+    K -->|No| M[Set Tax to 0]
+    L --> N[Calculate Final Amount]
+    M --> N
+    
+    N --> O[Final Amount = Total - Discount + Tax]
+    O --> P[Set Payment Status to 'Unpaid']
+    P --> Q[Set Generated Timestamp]
+    
+    Q --> R[Save Bill to Database]
+    R --> S{Bill Saved Successfully?}
+    
+    S -->|No| T[Display Error Message]
+    T --> U[Retry Bill Generation]
+    U --> R
+    
+    S -->|Yes| V[Print Bill for Customer]
+    V --> W[Present Bill to Customer]
+    W --> X[Customer Reviews Bill]
+    
+    X --> Y{Bill Acceptable?}
+    Y -->|No| Z[Customer Disputes Bill]
+    Z --> AA[Manager Reviews Dispute]
+    AA --> BB[Adjust Bill if Necessary]
+    BB --> V
+    
+    Y -->|Yes| CC[Customer Ready to Pay]
+    CC --> DD[Proceed to Payment]
+    
+    style A fill:#e1f5fe
+    style DD fill:#c8e6c9
+    style T fill:#ffcdd2
+    style Z fill:#fff3e0
+```
+
+#### Table Booking Workflow
+
+```mermaid
+flowchart TD
+    A[Customer Wants to Book Table] --> B{Booking Method}
+    B -->|Phone Call| C[Staff Receives Call]
+    B -->|In Person| D[Customer Visits Restaurant]
+    B -->|Online| E[Customer Uses Online System]
+    
+    C --> F[Staff Opens Booking System]
+    D --> F
+    E --> F
+    
+    F --> G[Enter Customer Details]
+    G --> H{Existing Customer?}
+    H -->|No| I[Create New Customer Record]
+    H -->|Yes| J[Retrieve Customer ID]
+    I --> K[Get Customer ID]
+    J --> K
+    
+    K --> L[Customer Specifies Requirements]
+    L --> M[Enter Booking Date]
+    M --> N[Enter Booking Time]
+    N --> O[Enter Party Size]
+    
+    O --> P[Check Table Availability]
+    P --> Q{Tables Available?}
+    
+    Q -->|No| R[Suggest Alternative Times]
+    R --> S{Customer Accepts Alternative?}
+    S -->|No| T[End Booking Process]
+    S -->|Yes| U[Update Booking Details]
+    U --> P
+    
+    Q -->|Yes| V[Display Available Tables]
+    V --> W[Select Suitable Table]
+    W --> X[Enter Table ID]
+    
+    X --> Y[Set Booking Status to 'Confirmed']
+    Y --> Z[Set Created Timestamp]
+    Z --> AA[Save Booking to Database]
+    
+    AA --> BB{Booking Saved Successfully?}
+    BB -->|No| CC[Display Error Message]
+    CC --> DD[Retry Booking]
+    DD --> AA
+    
+    BB -->|Yes| EE[Generate Booking Confirmation]
+    EE --> FF[Update Table Status to 'Reserved']
+    FF --> GG{Notification Method}
+    
+    GG -->|SMS| HH[Send SMS Confirmation]
+    GG -->|Email| II[Send Email Confirmation]
+    GG -->|Phone| JJ[Call Customer to Confirm]
+    
+    HH --> KK[Booking Process Complete]
+    II --> KK
+    JJ --> KK
+    
+    KK --> LL[Set Reminder for Booking Date]
+    LL --> MM[Monitor for Customer Arrival]
+    
+    style A fill:#e1f5fe
+    style KK fill:#c8e6c9
+    style T fill:#ffcdd2
+    style CC fill:#ffcdd2
+    style LL fill:#fff3e0
+```
 
 ## 📈 Future Enhancements
 
