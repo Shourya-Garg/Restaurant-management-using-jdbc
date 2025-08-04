@@ -1,16 +1,16 @@
-package org.example.DAO.impl;
+package org.example.dao.impl;
 
-import org.example.DAO.interfaces.OrderDAO;
+import org.example.dao.interfaces.OrderDao;
 import org.example.model.Order;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderDAOImpl implements OrderDAO {
+public class OrderDaoImpl implements OrderDao {
     private final Connection connection;
 
-    public OrderDAOImpl(Connection connection) {
+    public OrderDaoImpl(Connection connection) {
         this.connection = connection;
     }
 

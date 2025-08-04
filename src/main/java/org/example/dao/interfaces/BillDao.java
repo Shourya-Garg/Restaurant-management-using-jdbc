@@ -1,9 +1,9 @@
-package org.example.DAO.interfaces;
+package org.example.dao.interfaces;
 
 import org.example.model.Bill;
 import java.util.List;
 
-public interface BillDAO {
+public interface BillDao {
     void generateBill(Bill bill);
     Bill getBillByOrderId(int orderId);
     Bill getBillById(int billId);

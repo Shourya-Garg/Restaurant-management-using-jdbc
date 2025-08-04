@@ -1,16 +1,16 @@
-package org.example.DAO.impl;
+package org.example.dao.impl;
 
-import org.example.DAO.interfaces.TableDAO;
+import org.example.dao.interfaces.TableDao;
 import org.example.model.Table;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableDAOImpl implements TableDAO {
+public class TableDaoImpl implements TableDao {
     private final Connection connection;
 
-    public TableDAOImpl(Connection connection) {
+    public TableDaoImpl(Connection connection) {
         this.connection = connection;
     }
 

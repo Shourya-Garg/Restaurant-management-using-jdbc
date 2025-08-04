@@ -1,9 +1,9 @@
-package org.example.DAO.interfaces;
+package org.example.dao.interfaces;
 
 import org.example.model.Table;
 import java.util.List;
 
-public interface TableDAO {
+public interface TableDao {
     void addTable(Table table);
     Table getTableById(int tableId);
     List<Table> getAllTables();

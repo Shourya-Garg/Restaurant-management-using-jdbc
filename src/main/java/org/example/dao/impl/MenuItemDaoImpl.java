@@ -1,16 +1,16 @@
-package org.example.DAO.impl;
+package org.example.dao.impl;
 
-import org.example.DAO.interfaces.MenuItemDAO;
+import org.example.dao.interfaces.MenuItemDao;
 import org.example.model.MenuItem;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MenuItemDAOImpl implements MenuItemDAO {
+public class MenuItemDaoImpl implements MenuItemDao {
     private final Connection connection;
 
-    public MenuItemDAOImpl(Connection connection) {
+    public MenuItemDaoImpl(Connection connection) {
         this.connection = connection;
     }
 

@@ -1,16 +1,16 @@
-package org.example.DAO.impl;
+package org.example.dao.impl;
 
-import org.example.DAO.interfaces.BillDAO;
+import org.example.dao.interfaces.BillDao;
 import org.example.model.Bill;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BillDAOImpl implements BillDAO {
+public class BilDaoImpl implements BillDao {
     private final Connection connection;
 
-    public BillDAOImpl(Connection connection) {
+    public BilDaoImpl(Connection connection) {
         this.connection = connection;
     }
 

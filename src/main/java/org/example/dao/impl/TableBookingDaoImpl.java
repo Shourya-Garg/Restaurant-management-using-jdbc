@@ -1,16 +1,16 @@
-package org.example.DAO.impl;
+package org.example.dao.impl;
 
-import org.example.DAO.interfaces.TableBookingDAO;
+import org.example.dao.interfaces.TableBookingDao;
 import org.example.model.TableBooking;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableBookingDAOImpl implements TableBookingDAO {
+public class TableBookingDaoImpl implements TableBookingDao {
     private Connection connection;
 
-    public TableBookingDAOImpl(Connection connection) {
+    public TableBookingDaoImpl(Connection connection) {
         this.connection = connection;
     }
 

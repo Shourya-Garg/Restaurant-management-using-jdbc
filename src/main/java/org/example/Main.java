@@ -1,7 +1,7 @@
 package org.example;
 
-import org.example.DAO.RestaurantDAOFactory;
-import org.example.DAO.interfaces.*;
+import org.example.dao.RestaurantDaoFactory;
+import org.example.dao.interfaces.*;
 import org.example.model.*;
 import org.example.util.DatabaseUtil;
 
@@ -15,7 +15,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         try (Connection conn = DatabaseUtil.getConnection()) {
-            RestaurantDAOFactory daoFactory = new RestaurantDAOFactory(conn);
+            RestaurantDaoFactory daoFactory = new RestaurantDaoFactory(conn);
             Scanner scanner = new Scanner(System.in);
 
             while (true) {
@@ -52,8 +52,8 @@ public class Main {
         }
     }
 
-    private static void handleUserManagement(RestaurantDAOFactory daoFactory, Scanner scanner) {
-        UserDAO userDAO = daoFactory.getUserDAO();
+    private static void handleUserManagement(RestaurantDaoFactory daoFactory, Scanner scanner) {
+        UserDao userDAO = daoFactory.getUserDAO();
 
         while (true) {
             System.out.println("\n=== User Management ===");
@@ -125,8 +125,8 @@ public class Main {
         }
     }
 
-    private static void handleCustomerManagement(RestaurantDAOFactory daoFactory, Scanner scanner) {
-        CustomerDAO customerDAO = daoFactory.getCustomerDAO();
+    private static void handleCustomerManagement(RestaurantDaoFactory daoFactory, Scanner scanner) {
+        CustomerDao customerDAO = daoFactory.getCustomerDAO();
 
         while (true) {
             System.out.println("\n=== Customer Management ===");
@@ -196,8 +196,8 @@ public class Main {
             }
         }
     }
-    private static void handleTableManagement(RestaurantDAOFactory daoFactory, Scanner scanner) {
-        TableDAO tableDAO = daoFactory.getTableDAO();
+    private static void handleTableManagement(RestaurantDaoFactory daoFactory, Scanner scanner) {
+        TableDao tableDAO = daoFactory.getTableDAO();
 
         while (true) {
             System.out.println("\n=== Table Management ===");
@@ -271,9 +271,9 @@ public class Main {
             }
         }
     }
-    private static void handleOrderManagement(RestaurantDAOFactory daoFactory, Scanner scanner) {
-        OrderDAO orderDAO = daoFactory.getOrderDAO();
-        TableDAO tableDAO = daoFactory.getTableDAO();
+    private static void handleOrderManagement(RestaurantDaoFactory daoFactory, Scanner scanner) {
+        OrderDao orderDAO = daoFactory.getOrderDAO();
+        TableDao tableDAO = daoFactory.getTableDAO();
 
         while (true) {
             System.out.println("\n=== Order Management ===");
@@ -382,8 +382,8 @@ public class Main {
         }
     }
 
-    private static void handlePaymentManagement(RestaurantDAOFactory daoFactory, Scanner scanner) {
-        PaymentDAO paymentDAO = daoFactory.getPaymentDAO();
+    private static void handlePaymentManagement(RestaurantDaoFactory daoFactory, Scanner scanner) {
+        PaymentDao paymentDAO = daoFactory.getPaymentDAO();
 
         while (true) {
             System.out.println("\n=== Payment Management ===");
@@ -439,8 +439,8 @@ public class Main {
         }
     }
 
-    private static void handleTableBookingManagement(RestaurantDAOFactory daoFactory, Scanner scanner) {
-        TableBookingDAO bookingDAO = daoFactory.getTableBookingDAO();
+    private static void handleTableBookingManagement(RestaurantDaoFactory daoFactory, Scanner scanner) {
+        TableBookingDao bookingDAO = daoFactory.getTableBookingDAO();
 
         while (true) {
             System.out.println("\n=== Table Booking Management ===");
@@ -510,8 +510,8 @@ public class Main {
         }
     }
 
-    private static void handleBillManagement(RestaurantDAOFactory daoFactory, Scanner scanner) {
-        BillDAO billDAO = daoFactory.getBillDAO();
+    private static void handleBillManagement(RestaurantDaoFactory daoFactory, Scanner scanner) {
+        BillDao billDAO = daoFactory.getBillDAO();
 
         while (true) {
             System.out.println("\n=== Bill Management ===");

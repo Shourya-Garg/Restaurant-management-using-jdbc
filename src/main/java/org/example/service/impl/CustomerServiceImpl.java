@@ -1,7 +1,7 @@
 package org.example.service.impl;
 
-import org.example.DAO.RestaurantDAOFactory;
-import org.example.DAO.interfaces.CustomerDAO;
+import org.example.dao.RestaurantDaoFactory;
+import org.example.dao.interfaces.CustomerDao;
 import org.example.model.Customer;
 import org.example.service.interfaces.CustomerService;
 import org.example.util.DatabaseUtil;
@@ -15,8 +15,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void addCustomer(Customer customer) {
         try (Connection conn = DatabaseUtil.getConnection()) {
-            RestaurantDAOFactory factory = new RestaurantDAOFactory(conn);
-            CustomerDAO customerDAO = factory.getCustomerDAO();
+            RestaurantDaoFactory factory = new RestaurantDaoFactory(conn);
+            CustomerDao customerDAO = factory.getCustomerDAO();
             customerDAO.addCustomer(customer);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -26,8 +26,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer getCustomerById(int customerId) {
         try (Connection conn = DatabaseUtil.getConnection()) {
-            RestaurantDAOFactory factory = new RestaurantDAOFactory(conn);
-            CustomerDAO customerDAO = factory.getCustomerDAO();
+            RestaurantDaoFactory factory = new RestaurantDaoFactory(conn);
+            CustomerDao customerDAO = factory.getCustomerDAO();
             return customerDAO.getCustomerById(customerId);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -38,8 +38,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<Customer> getAllCustomers() {
         try (Connection conn = DatabaseUtil.getConnection()) {
-            RestaurantDAOFactory factory = new RestaurantDAOFactory(conn);
-            CustomerDAO customerDAO = factory.getCustomerDAO();
+            RestaurantDaoFactory factory = new RestaurantDaoFactory(conn);
+            CustomerDao customerDAO = factory.getCustomerDAO();
             return customerDAO.getAllCustomers();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -50,8 +50,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void updateCustomer(Customer customer) {
         try (Connection conn = DatabaseUtil.getConnection()) {
-            RestaurantDAOFactory factory = new RestaurantDAOFactory(conn);
-            CustomerDAO customerDAO = factory.getCustomerDAO();
+            RestaurantDaoFactory factory = new RestaurantDaoFactory(conn);
+            CustomerDao customerDAO = factory.getCustomerDAO();
             customerDAO.updateCustomer(customer);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,8 +61,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void deleteCustomer(int customerId) {
         try (Connection conn = DatabaseUtil.getConnection()) {
-            RestaurantDAOFactory factory = new RestaurantDAOFactory(conn);
-            CustomerDAO customerDAO = factory.getCustomerDAO();
+            RestaurantDaoFactory factory = new RestaurantDaoFactory(conn);
+            CustomerDao customerDAO = factory.getCustomerDAO();
             customerDAO.deleteCustomer(customerId);
         } catch (SQLException e) {
             e.printStackTrace();

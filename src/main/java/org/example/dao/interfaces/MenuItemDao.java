@@ -1,9 +1,9 @@
-package org.example.DAO.interfaces;
+package org.example.dao.interfaces;
 
 import org.example.model.MenuItem;
 import java.util.List;
 
-public interface MenuItemDAO {
+public interface MenuItemDao {
     void addMenuItem(MenuItem menuItem);
     MenuItem getMenuItemById(int itemId);
     List<MenuItem> getAllMenuItems();

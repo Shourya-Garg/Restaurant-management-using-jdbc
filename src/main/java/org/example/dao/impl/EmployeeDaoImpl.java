@@ -1,16 +1,16 @@
-package org.example.DAO.impl;
+package org.example.dao.impl;
 
-import org.example.DAO.interfaces.EmployeeDAO;
+import org.example.dao.interfaces.EmployeeDao;
 import org.example.model.Employee;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmployeeDAOImpl implements EmployeeDAO {
+public class EmployeeDaoImpl implements EmployeeDao {
     private final Connection connection;
 
-    public EmployeeDAOImpl(Connection connection) {
+    public EmployeeDaoImpl(Connection connection) {
         this.connection = connection;
     }
 

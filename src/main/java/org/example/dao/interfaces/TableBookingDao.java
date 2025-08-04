@@ -1,9 +1,9 @@
-package org.example.DAO.interfaces;
+package org.example.dao.interfaces;
 
 import org.example.model.TableBooking;
 import java.util.List;
 
-public interface TableBookingDAO {
+public interface TableBookingDao {
     void addBooking(TableBooking booking);
     TableBooking getBookingById(int bookingId);
     List<TableBooking> getAllBookings();

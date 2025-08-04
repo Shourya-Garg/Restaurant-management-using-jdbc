@@ -1,10 +1,10 @@
-package org.example.DAO.interfaces;
+package org.example.dao.interfaces;
 
 import org.example.model.SalesReport;
 
 import java.util.List;
 
-public interface SalesReportDAO {
+public interface SalesReportDao {
     void generateReport(SalesReport report);
     List<SalesReport> getAllReports();
 }

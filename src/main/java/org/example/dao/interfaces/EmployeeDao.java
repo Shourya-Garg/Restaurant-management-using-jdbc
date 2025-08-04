@@ -1,9 +1,9 @@
-package org.example.DAO.interfaces;
+package org.example.dao.interfaces;
 
 import org.example.model.Employee;
 import java.util.List;
 
-public interface EmployeeDAO {
+public interface EmployeeDao {
     void addEmployee(Employee employee);
     Employee getEmployeeById(int employeeId);
     List<Employee> getAllEmployees();

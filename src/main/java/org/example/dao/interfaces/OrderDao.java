@@ -1,9 +1,9 @@
-package org.example.DAO.interfaces;
+package org.example.dao.interfaces;
 
 import org.example.model.Order;
 import java.util.List;
 
-public interface OrderDAO {
+public interface OrderDao {
     void addOrder(Order order);
     Order getOrderById(int orderId);
     List<Order> getAllOrders();

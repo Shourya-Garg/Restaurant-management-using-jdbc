@@ -1,16 +1,16 @@
-package org.example.DAO.impl;
+package org.example.dao.impl;
 
-import org.example.DAO.interfaces.PaymentDAO;
+import org.example.dao.interfaces.PaymentDao;
 import org.example.model.Payment;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PaymentDAOImpl implements PaymentDAO {
+public class PaymentDaoImpl implements PaymentDao {
     private final Connection connection;
 
-    public PaymentDAOImpl(Connection connection) {
+    public PaymentDaoImpl(Connection connection) {
         this.connection = connection;
     }
 
