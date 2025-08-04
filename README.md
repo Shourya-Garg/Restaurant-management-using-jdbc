@@ -241,12 +241,120 @@ When you run the application, you'll see:
 
 ```mermaid
 erDiagram
-    users ||--o{ orders : "waiter serves"
-    customers ||--o{ table_bookings : "makes"
-    tables ||--o{ orders : "placed at"
-    tables ||--o{ table_bookings : "reserved"
-    orders ||--|| bills : "generates"
-    bills ||--o{ payments : "paid through"
+
+    User {
+        INT user_id PK
+        VARCHAR username
+        VARCHAR password
+        VARCHAR email
+        VARCHAR phone
+        ENUM role
+        BOOLEAN is_active
+        TIMESTAMP created_at
+    }
+
+    Customer {
+        INT customer_id PK
+        VARCHAR name
+        VARCHAR phone
+        VARCHAR email
+        BOOLEAN is_registered
+        TIMESTAMP created_at
+    }
+
+    Table {
+        INT table_id PK
+        INT table_number
+        INT capacity
+        ENUM status
+    }
+
+    TableBooking {
+        INT booking_id PK
+        INT customer_id FK
+        INT table_id FK
+        DATE booking_date
+        TIME booking_time
+        ENUM status
+        TIMESTAMP created_at
+    }
+
+    MenuItem {
+        INT item_id PK
+        VARCHAR name
+        TEXT description
+        DECIMAL price
+        ENUM category
+        BOOLEAN availability
+        TIMESTAMP created_at
+    }
+
+    Order {
+        INT order_id PK
+        INT table_id FK
+        INT waiter_id FK
+        TIMESTAMP order_time
+        ENUM status
+    }
+
+    OrderItem {
+        INT order_item_id PK
+        INT order_id FK
+        INT menu_item_id FK
+        INT quantity
+        ENUM status
+    }
+
+    Bill {
+        INT bill_id PK
+        INT order_id FK
+        DECIMAL total_amount
+        DECIMAL discount
+        DECIMAL tax
+        DECIMAL final_amount
+        ENUM payment_status
+        TIMESTAMP generated_at
+    }
+
+    Payment {
+        INT payment_id PK
+        INT bill_id FK
+        ENUM payment_method
+        DECIMAL amount_paid
+        TIMESTAMP payment_time
+        ENUM status
+    }
+
+    Employee {
+        INT employee_id PK
+        INT user_id FK
+        VARCHAR designation
+        TIME shift_start
+        TIME shift_end
+        DATE joined_date
+    }
+
+    SalesReport {
+        INT report_id PK
+        DATE report_date
+        DECIMAL total_sales
+        INT total_orders
+        TEXT top_items
+        INT generated_by FK
+    }
+
+    %% Relationships
+    Customer ||--o{ TableBooking : makes
+    Table ||--o{ TableBooking : is_booked_in
+    User ||--o{ Employee : is
+    Employee ||--o{ Order : takes
+    Table ||--o{ Order : is_for
+    Order ||--o{ OrderItem : contains
+    MenuItem ||--o{ OrderItem : is_part_of
+    Order ||--|| Bill : generates
+    Bill ||--|| Payment : is_paid_by
+    User ||--o{ SalesReport : generates
+
 ```
 
 ## 🔧 Configuration
