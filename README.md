@@ -436,18 +436,6 @@ classDiagram
         +setStatus(Status) void
     }
 
-    class OrderItem {
-        -int orderItemId
-        -int orderId
-        -int menuItemId
-        -int quantity
-        -Status status
-        +getOrderItemId() int
-        +setOrderItemId(int) void
-        +getQuantity() int
-        +setQuantity(int) void
-    }
-
     class Bill {
         -int billId
         -int orderId
@@ -537,26 +525,6 @@ classDiagram
         +deleteOrder(int) void
     }
 
-    %% Service Interfaces
-    class OrderService {
-        <<interface>>
-        +placeOrder(Order) void
-        +getOrderById(int) Order
-        +getAllOrders() List~Order~
-        +updateOrder(Order) void
-        +deleteOrder(int) void
-    }
-
-    %% Service Implementations
-    class OrderServiceImpl {
-        -List~Order~ orders
-        +placeOrder(Order) void
-        +getOrderById(int) Order
-        +getAllOrders() List~Order~
-        +updateOrder(Order) void
-        +deleteOrder(int) void
-    }
-
     %% Controllers
     class OrderController {
         -OrderService orderService
@@ -626,39 +594,37 @@ classDiagram
     }
 
     %% Relationships
-    User ||--|| UserRole : has
-    Order ||--|| OrderStatus : has
-    Table ||--|| TableStatus : has
-    Payment ||--|| PaymentMethod : uses
+    User ||--|| UserRole
+    Order ||--|| OrderStatus
+    Table ||--|| TableStatus
+    Payment ||--|| PaymentMethod
     
-    Order ||--o{ OrderItem : contains
-    Order ||--|| Bill : generates
-    Bill ||--o{ Payment : receives
+    Order ||--|| Bill
+    Bill ||--o{ Payment
     
-    Customer ||--o{ TableBooking : makes
-    Table ||--o{ TableBooking : reserved
-    Table ||--o{ Order : placed_at
-    User ||--o{ Order : serves
+    Customer ||--o{ TableBooking
+    Table ||--o{ TableBooking
+    Table ||--o{ Order
+    User ||--o{ Order
     
-    UserDao <|.. UserDaoImpl : implements
-    OrderDao <|.. OrderDaoImpl : implements
-    OrderService <|.. OrderServiceImpl : implements
+    UserDao <|.. UserDaoImpl
+    OrderDao <|.. OrderDaoImpl
     
-    OrderController --> OrderService : uses
-    PaymentController --> PaymentService : uses
+    OrderController --> OrderDao
+    PaymentController --> PaymentDao
     
-    RestaurantDaoFactory --> UserDao : creates
-    RestaurantDaoFactory --> OrderDao : creates
-    RestaurantDaoFactory --> BillDao : creates
+    RestaurantDaoFactory --> UserDao
+    RestaurantDaoFactory --> OrderDao
+    RestaurantDaoFactory --> BillDao
     
-    UserDaoImpl --> DatabaseUtil : uses
-    OrderDaoImpl --> DatabaseUtil : uses
+    UserDaoImpl --> DatabaseUtil
+    OrderDaoImpl --> DatabaseUtil
 ```
 
 ### Use Case Diagram
 
 ```mermaid
-graph TB
+flowchart TD
     %% Actors
     Manager[👨‍💼 Manager]
     Waiter[👨‍🍳 Waiter]
@@ -747,16 +713,10 @@ graph TB
     KitchenStaff --> UC25
     KitchenStaff --> UC10
     
-    %% Customer relationships (indirect)
+    %% Customer relationships
     Customer -.-> UC19
     Customer -.-> UC9
     Customer -.-> UC16
-    
-    %% Include relationships
-    UC13 --> UC14 : includes
-    UC13 --> UC15 : includes
-    UC9 --> UC7 : includes
-    UC19 --> UC22 : includes
 ```
 
 ### Sequence Diagrams
@@ -773,7 +733,7 @@ sequenceDiagram
     
     C->>W: Requests to place order
     W->>S: Check available tables
-    S->>DB: Query tables with status 'Available'
+    S->>DB: Query tables with status Available
     DB-->>S: Return available tables
     S-->>W: Display available tables
     
@@ -785,26 +745,26 @@ sequenceDiagram
     Note over W,S: Table ID, Waiter ID, Menu Items
     
     S->>S: Create Order object
-    S->>S: Set status to 'Placed'
+    S->>S: Set status to Placed
     S->>DB: Save order to database
     DB-->>S: Order saved successfully
     
-    S->>DB: Update table status to 'Occupied'
+    S->>DB: Update table status to Occupied
     DB-->>S: Table status updated
     
     S->>K: Send order to kitchen
     K-->>S: Order received
-    S->>DB: Update order status to 'Preparing'
+    S->>DB: Update order status to Preparing
     
     S-->>W: Order placed successfully
     W-->>C: Order confirmation
     
     Note over K: Kitchen prepares food
-    K->>S: Update order status to 'Served'
+    K->>S: Update order status to Served
     S->>DB: Update order status
     
     W->>C: Serve food
-    W->>S: Update order status to 'Completed'
+    W->>S: Update order status to Completed
     S->>DB: Update order status
 ```
 
@@ -824,7 +784,7 @@ sequenceDiagram
     DB-->>S: Return order information
     
     S->>S: Calculate total amount
-    W->>S: Enter discount (if any)
+    W->>S: Enter discount if any
     S->>S: Apply discount
     S->>S: Calculate tax
     S->>S: Calculate final amount
@@ -843,10 +803,10 @@ sequenceDiagram
     
     S->>S: Create Payment record
     S->>DB: Save payment details
-    S->>DB: Update bill status to 'Paid'
+    S->>DB: Update bill status to Paid
     DB-->>S: Payment recorded
     
-    S->>DB: Update table status to 'Available'
+    S->>DB: Update table status to Available
     DB-->>S: Table status updated
     
     S-->>W: Payment successful
@@ -864,7 +824,7 @@ sequenceDiagram
     
     C->>S: Request table booking
     S->>Sys: Check customer in system
-    Sys->>DB: Query customer by phone/email
+    Sys->>DB: Query customer by phone or email
     
     alt Customer exists
         DB-->>Sys: Return customer details
@@ -889,13 +849,11 @@ sequenceDiagram
         Sys->>DB: Save booking
         DB-->>Sys: Booking confirmed
         
-        Sys->>DB: Update table status to 'Reserved'
+        Sys->>DB: Update table status to Reserved
         DB-->>Sys: Table status updated
         
         Sys-->>S: Booking successful
         S-->>C: Booking confirmation
-        
-        Note over Sys: Send confirmation SMS/Email
         
     else No tables available
         Sys-->>S: No tables available
@@ -904,7 +862,6 @@ sequenceDiagram
         alt Customer accepts alternative
             C->>S: Accept new time
             S->>Sys: Update booking details
-            Note over Sys: Repeat availability check
         else Customer declines
             C->>S: Cancel booking request
             S-->>C: Booking cancelled
@@ -942,25 +899,20 @@ flowchart TD
     P --> N
     O -->|No| Q[Calculate Order Total]
     
-    Q --> R[Set Order Status to 'Placed']
+    Q --> R[Set Order Status to Placed]
     R --> S[Save Order to Database]
-    S --> T[Update Table Status to 'Occupied']
+    S --> T[Update Table Status to Occupied]
     
     T --> U[Send Order to Kitchen]
     U --> V[Kitchen Receives Order]
-    V --> W[Update Order Status to 'Preparing']
+    V --> W[Update Order Status to Preparing]
     
     W --> X[Kitchen Prepares Food]
-    X --> Y[Update Order Status to 'Served']
+    X --> Y[Update Order Status to Served]
     Y --> Z[Waiter Delivers Food]
-    Z --> AA[Update Order Status to 'Completed']
+    Z --> AA[Update Order Status to Completed]
     
     AA --> BB[Order Process Complete]
-    
-    style A fill:#e1f5fe
-    style BB fill:#c8e6c9
-    style U fill:#fff3e0
-    style V fill:#fff3e0
 ```
 
 #### Billing Workflow
@@ -987,7 +939,7 @@ flowchart TD
     M --> N
     
     N --> O[Final Amount = Total - Discount + Tax]
-    O --> P[Set Payment Status to 'Unpaid']
+    O --> P[Set Payment Status to Unpaid]
     P --> Q[Set Generated Timestamp]
     
     Q --> R[Save Bill to Database]
@@ -1009,11 +961,6 @@ flowchart TD
     
     Y -->|Yes| CC[Customer Ready to Pay]
     CC --> DD[Proceed to Payment]
-    
-    style A fill:#e1f5fe
-    style DD fill:#c8e6c9
-    style T fill:#ffcdd2
-    style Z fill:#fff3e0
 ```
 
 #### Table Booking Workflow
@@ -1054,7 +1001,7 @@ flowchart TD
     V --> W[Select Suitable Table]
     W --> X[Enter Table ID]
     
-    X --> Y[Set Booking Status to 'Confirmed']
+    X --> Y[Set Booking Status to Confirmed]
     Y --> Z[Set Created Timestamp]
     Z --> AA[Save Booking to Database]
     
@@ -1064,7 +1011,7 @@ flowchart TD
     DD --> AA
     
     BB -->|Yes| EE[Generate Booking Confirmation]
-    EE --> FF[Update Table Status to 'Reserved']
+    EE --> FF[Update Table Status to Reserved]
     FF --> GG{Notification Method}
     
     GG -->|SMS| HH[Send SMS Confirmation]
@@ -1077,12 +1024,6 @@ flowchart TD
     
     KK --> LL[Set Reminder for Booking Date]
     LL --> MM[Monitor for Customer Arrival]
-    
-    style A fill:#e1f5fe
-    style KK fill:#c8e6c9
-    style T fill:#ffcdd2
-    style CC fill:#ffcdd2
-    style LL fill:#fff3e0
 ```
 
 ## 📈 Future Enhancements
