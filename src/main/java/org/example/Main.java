@@ -288,8 +288,16 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    // Show available tables before taking input
-                    List<Table> availableTables = tableDAO.getAllTables();
+                    // Show only available tables before taking input
+                    List<Table> availableTables = tableDAO.getAllTables().stream()
+                        .filter(t -> t.getStatus() == Table.Status.Available)
+                        .toList();
+                    
+                    if (availableTables.isEmpty()) {
+                        System.out.println("No available tables at the moment.");
+                        break;
+                    }
+                    
                     System.out.println("---- Available Tables ----");
                     for (Table t : availableTables) {
                         System.out.println("ID: " + t.getTableId() + " | Table #: " + t.getTableNumber() + " | Status: " + t.getStatus());
@@ -301,10 +309,10 @@ public class Main {
                     int tableId = scanner.nextInt();
                     scanner.nextLine();
 
-                    // Check if table ID is valid
+                    // Check if selected table is actually available
                     Table selectedTable = tableDAO.getTableById(tableId);
-                    if (selectedTable == null) {
-                        System.out.println("Invalid Table ID. Please add the table first.");
+                    if (selectedTable == null || selectedTable.getStatus() != Table.Status.Available) {
+                        System.out.println("Invalid Table ID or table is not available. Please select from available tables only.");
                         break;
                     }
 
@@ -316,6 +324,11 @@ public class Main {
                     order.setOrderTime(new Timestamp(System.currentTimeMillis()));
                     order.setStatus(Order.Status.Placed);
                     orderDAO.addOrder(order);
+                    
+                    // Update table status to Occupied when order is placed
+                    selectedTable.setStatus(Table.Status.Occupied);
+                    tableDAO.updateTable(selectedTable);
+                    
                     System.out.println("Order added successfully.");
                     break;
 
