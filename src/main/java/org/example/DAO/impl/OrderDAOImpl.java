@@ -16,12 +16,12 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public void addOrder(Order order) {
-        String sql = "INSERT INTO orders (table_id, customer_id, status, created_at) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO orders (table_id, waiter_id, order_time, status) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, order.getTableId());
-            stmt.setInt(2, order.getOrderId());
-            stmt.setString(3, order.getStatus().toString());
-            stmt.setTimestamp(4, order.getOrderTime());
+            stmt.setInt(2, order.getWaiterId());
+            stmt.setTimestamp(3, order.getOrderTime());
+            stmt.setString(4, order.getStatus().toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -56,10 +56,10 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public void updateOrder(Order order) {
-        String sql = "UPDATE orders SET table_id=?, customer_id=?, status=? WHERE order_id=?";
+        String sql = "UPDATE orders SET table_id=?, waiter_id=?, status=? WHERE order_id=?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, order.getTableId());
-            stmt.setInt(2, order.getOrderId());
+            stmt.setInt(2, order.getWaiterId());
             stmt.setString(3, order.getStatus().toString());
             stmt.setInt(4, order.getOrderId());
             stmt.executeUpdate();
@@ -83,9 +83,9 @@ public class OrderDAOImpl implements OrderDAO {
         Order order = new Order();
         order.setOrderId(rs.getInt("order_id"));
         order.setTableId(rs.getInt("table_id"));
-        order.setWaiterId(rs.getInt("customer_id"));
+        order.setWaiterId(rs.getInt("waiter_id"));
         order.setStatus(Order.Status.valueOf(rs.getString("status")));
-        order.setOrderTime(rs.getTimestamp("created_at"));
+        order.setOrderTime(rs.getTimestamp("order_time"));
         return order;
     }
 }

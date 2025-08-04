@@ -16,17 +16,14 @@ public class TableBookingDAOImpl implements TableBookingDAO {
 
     @Override
     public void addBooking(TableBooking booking) {
-        String sql = "INSERT INTO table_bookings (customer_id, table_id, booking_time, status, created_at) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO table_bookings (customer_id, table_id, booking_date, booking_time, status, created_at) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, booking.getCustomerId());
             stmt.setInt(2, booking.getTableId());
-            // Combine date and time into a single timestamp
-            Timestamp bookingTimestamp = new Timestamp(
-                booking.getBookingDate().getTime() + booking.getBookingTime().getTime()
-            );
-            stmt.setTimestamp(3, bookingTimestamp);
-            stmt.setString(4, booking.getStatus().toString());
-            stmt.setTimestamp(5, booking.getCreatedAt());
+            stmt.setDate(3, booking.getBookingDate());
+            stmt.setTime(4, booking.getBookingTime());
+            stmt.setString(5, booking.getStatus().toString());
+            stmt.setTimestamp(6, booking.getCreatedAt());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -65,16 +62,14 @@ public class TableBookingDAOImpl implements TableBookingDAO {
 
     @Override
     public void updateBooking(TableBooking booking) {
-        String sql = "UPDATE table_bookings SET customer_id=?, table_id=?, booking_time=?, status=? WHERE booking_id=?";
+        String sql = "UPDATE table_bookings SET customer_id=?, table_id=?, booking_date=?, booking_time=?, status=? WHERE booking_id=?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, booking.getCustomerId());
             stmt.setInt(2, booking.getTableId());
-            Timestamp bookingTimestamp = new Timestamp(
-                booking.getBookingDate().getTime() + booking.getBookingTime().getTime()
-            );
-            stmt.setTimestamp(3, bookingTimestamp);
-            stmt.setString(4, booking.getStatus().toString());
-            stmt.setInt(5, booking.getBookingId());
+            stmt.setDate(3, booking.getBookingDate());
+            stmt.setTime(4, booking.getBookingTime());
+            stmt.setString(5, booking.getStatus().toString());
+            stmt.setInt(6, booking.getBookingId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -97,8 +92,8 @@ public class TableBookingDAOImpl implements TableBookingDAO {
         booking.setBookingId(rs.getInt("booking_id"));
         booking.setCustomerId(rs.getInt("customer_id"));
         booking.setTableId(rs.getInt("table_id"));
-        booking.setBookingTime(new Time(rs.getTimestamp("booking_time").getTime()));
-        booking.setBookingDate(new Date(rs.getTimestamp("booking_time").getTime()));
+        booking.setBookingDate(rs.getDate("booking_date"));
+        booking.setBookingTime(rs.getTime("booking_time"));
         booking.setStatus(TableBooking.Status.valueOf(rs.getString("status")));
         booking.setCreatedAt(rs.getTimestamp("created_at"));
         return booking;

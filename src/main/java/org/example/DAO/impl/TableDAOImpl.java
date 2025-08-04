@@ -16,11 +16,11 @@ public class TableDAOImpl implements TableDAO {
 
     @Override
     public void addTable(Table table) {
-        String sql = "INSERT INTO tables (table_number, capacity, is_available) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO tables (table_number, capacity, status) VALUES (?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, table.getTableNumber());
             stmt.setInt(2, table.getCapacity());
-            stmt.setBoolean(3, table.getStatus() == Table.Status.Available);
+            stmt.setString(3, table.getStatus().toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -60,11 +60,11 @@ public class TableDAOImpl implements TableDAO {
 
     @Override
     public void updateTable(Table table) {
-        String sql = "UPDATE tables SET table_number=?, capacity=?, is_available=? WHERE table_id=?";
+        String sql = "UPDATE tables SET table_number=?, capacity=?, status=? WHERE table_id=?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, table.getTableNumber());
             stmt.setInt(2, table.getCapacity());
-            stmt.setBoolean(3, table.getStatus() == Table.Status.Available);
+            stmt.setString(3, table.getStatus().toString());
             stmt.setInt(4, table.getTableId());
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -88,7 +88,7 @@ public class TableDAOImpl implements TableDAO {
         table.setTableId(rs.getInt("table_id"));
         table.setTableNumber(rs.getInt("table_number"));
         table.setCapacity(rs.getInt("capacity"));
-        table.setStatus(rs.getBoolean("is_available") ? Table.Status.Available : Table.Status.Occupied);
+        table.setStatus(Table.Status.valueOf(rs.getString("status")));
         return table;
     }
 }

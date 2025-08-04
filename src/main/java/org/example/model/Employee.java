@@ -10,6 +10,10 @@ public class Employee {
     private Time shiftStart;
     private Time shiftEnd;
     private Date joinedDate;
+    private String name;
+    private String role;
+    private String contactNumber;
+    private String email;
 
     public Employee() {}
 
@@ -49,42 +53,34 @@ public class Employee {
     }
 
     public String getName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+        return name;
     }
 
     public String getRole() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRole'");
+        return role;
     }
 
     public String getContactNumber() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getContactNumber'");
+        return contactNumber;
     }
 
     public String getEmail() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getEmail'");
+        return email;
     }
 
-    public void setName(String string) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setName'");
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setRole(String string) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setRole'");
+    public void setRole(String role) {
+        this.role = role;
     }
 
-    public void setContactNumber(String string) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setContactNumber'");
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
     }
 
-    public void setEmail(String string) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setEmail'");
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

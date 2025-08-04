@@ -4,6 +4,8 @@ import org.example.DAO.interfaces.PaymentDAO;
 import org.example.model.Payment;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PaymentDAOImpl implements PaymentDAO {
     private final Connection connection;
@@ -45,5 +47,27 @@ public class PaymentDAOImpl implements PaymentDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public List<Payment> getAllPayments() {
+        String sql = "SELECT * FROM payments";
+        List<Payment> payments = new ArrayList<>();
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                Payment payment = new Payment();
+                payment.setPaymentId(rs.getInt("payment_id"));
+                payment.setBillId(rs.getInt("bill_id"));
+                payment.setPaymentMethod(Payment.PaymentMethod.valueOf(rs.getString("payment_method")));
+                payment.setAmountPaid(rs.getDouble("amount_paid"));
+                payment.setPaymentTime(rs.getTimestamp("paid_at"));
+                payment.setStatus(Payment.Status.valueOf(rs.getString("status")));
+                payments.add(payment);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return payments;
     }
 }
